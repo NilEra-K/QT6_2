@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/icon">
+        <file>images/close.png</file>
+        <file>images/editor.png</file>
+        <file>images/file.png</file>
+        <file>images/mini.png</file>
+    </qresource>
+</RCC>

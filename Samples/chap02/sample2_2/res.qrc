@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>images/close.png</file>
+        <file>images/editor.png</file>
+        <file>images/file.png</file>
+        <file>images/mini.png</file>
+        <file>images/cancle.png</file>
+        <file>images/ensure.png</file>
+        <file>images/eraser.png</file>
+    </qresource>
+</RCC>
