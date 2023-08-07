@@ -1,6 +1,6 @@
 ## Hello
 
-编译过程(以 `Hello` 为例): <p>
+编译过程(以 `Hello` 为例):
 1. `qmake -project` 生成 `Hello.pro` 文件
 2. `vi Hello.pro` 修改 `Hello.pro` 文件, 添加相应的模块
 3. `qmake` 生成 `Makefile` 文件
@@ -30,5 +30,19 @@
 - 显示结果的控件只可查看不可修改, 但支持复制到剪贴板
 - 所有子窗口的大小和位置随主窗口的缩放自动调整至最佳
 
+## GetSysTime
+获取系统时间, 使用面向对象的 Qt 编程技术创建获取时间窗口
+- 点击按钮, 通过自定义的槽函数获取时间并显示到标签
+- 发送自定义信号
+
+## SumCalculator_useDesigner
+使用 Designer 实现加法器布局, 了解使用 `uic` 的编译过程: <p>
+`uic SumCalculator.ui -o ui_SumCalculator.h`
+
+## Login
+使用 Designer 设计登录对话框, 了解 `lineEdit` 控件的 `echoMode` 属性, 可以防止密码明文显示
+- 点击 "OK" 按钮判断输入用户名或密码是否正确
+- 如错误弹出信息提示框, 可以重新登录
+- 点击 "Cancel" 按钮, 则退出登录 
 
 
