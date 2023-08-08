@@ -40,9 +40,25 @@
 `uic SumCalculator.ui -o ui_SumCalculator.h`
 
 ## Login
-使用 Designer 设计登录对话框, 了解 `lineEdit` 控件的 `echoMode` 属性, 可以防止密码明文显示
+使用 Designer 设计登录对话框
+- 了解 `lineEdit` 控件的 `echoMode` 属性, 可以防止密码明文显示
+- 了解 `QDialogButtonBox` 按钮组控件, 其包含两个按钮, 当按下"确定"按钮发送 `accepted()` 信号, 当按下"取消"按钮则发送 `rejected()` 信号
+- 了解 `QMessageBox` 控件, `criticla()` 函数的使用
 - 点击 "OK" 按钮判断输入用户名或密码是否正确
 - 如错误弹出信息提示框, 可以重新登录
 - 点击 "Cancel" 按钮, 则退出登录 
+- 自动连接信号与槽, 槽函数命名规则 `on_控件名_信号函数名(参数列表)` , 例如 `on_buttonBox_accept(void)`
+
+# SumCalculator_useCreator
+使用 Creator 重构加法器实例
+- 在任意目录下, 执行 `qtcreator` , 进入 QT 集成开发环境界面
+- 在欢迎界面选择 "New Project" 创建新项目
+
+# ShowImages
+了解绘图事件, 实现一个简单的图片展示器
+- 了解 QT Resources(.qrc) 文件 的添加和使用
+  - `Prefix` 前缀, 可以随意选择, 产生一个逻辑路径
+  - 使用资源时, 需要加一个 `:` , 例如前缀为 `/` , 添加了一个 `image` 文件夹, 当加载图片资源时可以采用 `QImage image(":/image/..")` 的方式
+- 了解窗口的 `sizePolicy` 尺寸策略属性, 包含 `Preferred` 完美的(可以理解为平分策略), `Expanding` 尽量伸展
 
 
