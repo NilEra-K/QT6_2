@@ -20,6 +20,13 @@ protected:
     // 绘图事件处理函数
     void paintEvent(QPaintEvent* event);
 
+private slots:
+    void on_btnPrev_clicked();
+
+    void on_btnNext_clicked();
+
+    void on_btnClose_clicked();
+
 private:
     Ui::ShowImagesDialog *ui;
     int m_index;    // 图片索引

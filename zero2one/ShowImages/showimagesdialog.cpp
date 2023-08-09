@@ -23,9 +23,9 @@ void ShowImagesDialog::paintEvent(QPaintEvent* event){
     // 2. 获取绘图区域
     QRect rect = ui->frame->frameRect();
     // [验证] 通过 ui->frame->frameRect() 获取的坐标原点为(0, 0)
-    // int ax, ay, aw, ah;
-    // rect.getRect(&ax, &ay, &aw, &ah);
-    // qDebug() << ax << ay;
+     int ax, ay, aw, ah;
+     rect.getRect(&ax, &ay, &aw, &ah);
+     qDebug() << ax << ay;
 
     // [WHY] 坐标系平移:
     // void QPainter::drawImage(const QRectF& targetRect, const QImage& image, const QRectF& sourceRect = QRectF(), Qt::ImageConversionFlags flags = Qt::AutoColor);
@@ -37,14 +37,38 @@ void ShowImagesDialog::paintEvent(QPaintEvent* event){
     rect.translate(ui->frame->pos());
 
     // 通过移动后, 得到位置为 (11, 11)
-    // rect.getRect(&ax, &ay, &aw, &ah);
-    // qDebug() << ax << ay;
+    rect.getRect(&ax, &ay, &aw, &ah);
+    qDebug() << ax << ay;
 
     // 3. 构建一张要绘制的图片
-    QImage image(":/images/0.jpg");
+    QImage image(":/images/" + QString::number(m_index) +".jpg");
     // 4. 使用 painter 绘制图片
     painter.drawImage(rect, image); // drawImage(const QRect& r, const QImage& image);
                                     // const QRect& r: 表示在何处绘制
                                     // const QImage& image: 表示绘制什么
+}
+
+
+void ShowImagesDialog::on_btnPrev_clicked()
+{
+    if(--m_index < 0) {
+        m_index = 7;    // 7 是指共有七张图片
+    }
+    this->update();     // 触发绘图事件的产生 -> 调用绘图处理函数
+}
+
+
+void ShowImagesDialog::on_btnNext_clicked()
+{
+    if(++m_index > 7) {
+        m_index = 0;
+    }
+    this->update();
+}
+
+
+void ShowImagesDialog::on_btnClose_clicked()
+{
+    this->close();
 }
 
