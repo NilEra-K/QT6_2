@@ -9,7 +9,6 @@
 #include <QVector>
 #include <QDebug>
 
-
 QT_BEGIN_NAMESPACE
 namespace Ui { class TimerDialog; }
 QT_END_NAMESPACE
@@ -21,6 +20,9 @@ class TimerDialog : public QDialog
 public:
     TimerDialog(QWidget *parent = nullptr);
     ~TimerDialog();
+private slots:
+    void on_btnTimer_clicked();
+
 private:
     // 将指定路径的图片加载到容器中
     void loadImages(const QString& path);
