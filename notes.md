@@ -133,6 +133,53 @@ QT 框架中的模块分为两大类:
   - **QWidget** 类的 `update()/repaint()` 成员函数被调用
 - 如果希望在自己的窗口中显示某个图像, 在 **QWidget** 的窗口子类中可以重写绘图事件函数 `paintEvent` , 在其中可用 **QPainter(Qt二维图形引擎)** 实现指定的**图像绘制、渲染**等操作
 
+***定时器事件***
+- Qt 通过两套机制为应用程序提供定时功能
+  - 定时器事件, 由 `QObject` 提供
+  - 定时器信号, 由 `QTimer` 提供
+- 通过定时器事件实现定时器
+  - `int QObject:startTimer(int interval);` 启动定时器, 以后每隔 `interval` 毫秒触发一次定时器事件, **返回定时器 ID**
+  - `void QObject::timerEvent(QTimerEvent*);` **虚函数** , 定时器事件处理函数
+  - `void QObject::killTimer(int id);` 关闭参数 `id` 所标识的定时器
+
+***鼠标事件***
+- `QWidget` 类定义了以下虚函数提供对鼠标事件的处理, 其参数 `QMouseEvent` 描述了鼠标事件的细节, 如发事件的鼠标按键、鼠标所在位置等
+  - `virtual void mousePressEvent (QMouseEvent* e);` 鼠标按下
+  - `virtual void mouseReleaseEvent(QMouseEvent* e);` 鼠标抬起
+  - `virtual void mouseDoubleClickEvent(QMouseEvent* e);` 鼠标双击
+  - `virtual void mouseMoveEvent(QMouseEvent* e);` 鼠标移动
+
+***键盘事件***
+- `QWidget` 类定义了以下虚函数提供对键盘事件的处理, 其参数 `QKeyEvent` 描述了键盘事件的细节, 如引发事件的键盘按键文本等
+  - `virtual void keyPressEvent (QKeyEvent* e);` 按键按下
+  - `virtual void keyReleaseEvent(QKeyEvent* e);` 按键抬起
+
+**混合方式 UI 设计** 
+- 可视化 UI 设计无需人工编写代码区处理大量繁琐的界面组件的创建和布局管理工作, 可以直观地进行界面设计, 大大提高工作效率, **但某些组件无法可视化地添加到界面上 ( 例如状态栏、工具栏的部分功能等 )**
+- 采用纯代码方式进行 UI 设计虽然无所不能, 但是设计效率太低, 过程非常繁琐
+- 混合方式创建UI, 即部分界面设计用UI设计器可视化实现, 部分无法在 UI 设计器里实现的界面设计用代码实现
+
+***主窗口***
+- `QMainWindow` 是一个为用户提供主窗口程序的类, 包含一个菜单栏多个工具栏、多个停靠控件、一个状态栏以及一个中心控件, 是许多应用程序(如文本编辑器、图片编辑器等)的基础
+- Qt主窗口界面布局如下图
+  ![](./src/MainWindowLayout.png)
+- 主窗口具有自己的布局管理器因此不允许在主窗口上设置或创建布局管理器, 但是在中心控件上可以设置
+- **菜单栏**
+  - 菜单是一系列命令的列表, 为了实现菜单、工具栏按钮、键盘快捷方式等命令的一致性, **QT 使用动作(Action)来表示这些命令**
+  - Qt 的菜单就是由一系列的 **QAction 动作对象** 构成的列表
+  - 菜单栏是包含菜单的面板, 位于主窗口标题栏的下面一个主窗口只能有一个菜单栏
+- **工具栏**
+  - 工具栏是由一系列的类似于按钮的动作排列而成的面板, 它通常由一些经常使用的命令(动作)组成
+  - 工具栏位于菜单栏的下面、状态栏的上面, 可以停靠在主窗口的上下左右四个方向
+  - 一个主窗口可以包含多个工具栏
+- **状态栏**
+  - 位于应用程序底部, 用于显示应用程序状态的一些信息
+- **QAction**
+  - `QAction` 类提供了抽象的用户界面 *action* , 这些 *action* 可以被放置在窗口控件
+  - `QAction` 可以被添加到菜单和工具栏中, 并且可以自动保持在菜单和工具栏中的同步。
+  - `QAction` 是可以作为独立的对象被创建, 也可以在构建菜单时创建
+  - `QAction` 可以包含一个*图标* 、*菜单文本* 、*快捷键* 、*状态文本* 等
+  - 只有将 `QAction` 添加到窗口控件上, 才可以使用这些 `QAction`
 
 
 
