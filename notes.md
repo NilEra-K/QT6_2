@@ -38,6 +38,8 @@ QT 框架中的模块分为两大类:
   - `void move(int x, int y);`
   - `void resize(int x, int y);`
 
+---
+
 **QT 信号与槽**
 - 什么是信号和槽
   - 信号和槽是 QT 自定义的一种通信机制, 实现对象之间的数据交互
@@ -88,12 +90,16 @@ QT 框架中的模块分为两大类:
   - 两个信号可以直接连接(信号级连) - 了解即可 <p>
     `QObject::connect(A1, SIGNAL(sigfunc1(int)), A2, SIGNAL(sigfunc2(int)));`
 
+---
+
 **面向对象的 QT 编程** <p>
 ***基于对象的 QT 编程***
 - 完全不使用任何面向对象技术, 而只是利用Qt所提供的类创建对象, 并诉用对象的接口以满足用户的需求是可能的, 但这样构建的应用程序其功能必然是十分有限的
 - 首先, Qt类保护成员中的诸多实现无法在类的外部被复用, Qt试图通过多态实现的很多机制, 如事件处理, 完全无法使用
 - 再次, Qt提供的信号和槽不可能满足用户所有的需求, 自定义信号和槽需要面向对象技术
 - 最后, Qt Designer、Qt Creator等工具链都在以面向对象的方式使用Qt, 不能反其道而行之
+
+---
 
 **QT Designer (QT 设计师)**
 - 在指定目录下输入 `designer` 进入 QT Designer, 进入 QT Designer 后可以进行可视化的 UI 编辑, 当成功布局好 UI 后按住 `ctrl + S` 进行重命名保存
@@ -102,9 +108,13 @@ QT 框架中的模块分为两大类:
   - **方法 1:** 通过继承方式, 将界面相关代码继承过来直接使用
   - **方法 2:** 通过组合方式, 添加一个界面类的成员变量(ui), 通过该成员访问界面相关的代码, 实际开发中, 推荐这种方法
 
+---
+
 **QT Creator (QT 创造器)**
 - 在任意目录下, 执行 `qtcreator` , 进入 QT 集成开发环境界面(Windows 下需要将对应的环境变量进行添加)
 - 在欢迎界面选择 "New Project" 创建新项目
+
+---
 
 **QT 事件**
 - 事件的概念
@@ -122,6 +132,8 @@ QT 框架中的模块分为两大类:
     - `void QWidget::paintEvent(QPaintEvent* e);` 绘图事件
   - **所有的事件处理函数都是虚函数**, 可以被 QWidget 的子类覆盖, 以提供针对不同窗口控件类型的事件处理, 控件的使用者所关心的往往是定义什么样的槽处理什么样的信号, 而控件的实现者则更关心覆盖哪些事件处理函数
   - 如果程序员希望在窗口中自定义的处理事件, 可以**继承 QWidget** 或者其子类, 比如**QDialog、QMainWindow** , 在自定义的窗口子类中重写事件处理函数, 当相应事件被触发时, 会利用多态的语法机制, 所执行到的事件处理函数将是子类中重写的版本, 从而实现程序员想要的事件处理效果
+
+---
 
 **QT 常用事件** <p>
 ***绘图事件***
@@ -154,6 +166,8 @@ QT 框架中的模块分为两大类:
   - `virtual void keyPressEvent (QKeyEvent* e);` 按键按下
   - `virtual void keyReleaseEvent(QKeyEvent* e);` 按键抬起
 
+---
+
 **混合方式 UI 设计** 
 - 可视化 UI 设计无需人工编写代码区处理大量繁琐的界面组件的创建和布局管理工作, 可以直观地进行界面设计, 大大提高工作效率, **但某些组件无法可视化地添加到界面上 ( 例如状态栏、工具栏的部分功能等 )**
 - 采用纯代码方式进行 UI 设计虽然无所不能, 但是设计效率太低, 过程非常繁琐
@@ -181,5 +195,50 @@ QT 框架中的模块分为两大类:
   - `QAction` 可以包含一个*图标* 、*菜单文本* 、*快捷键* 、*状态文本* 等
   - 只有将 `QAction` 添加到窗口控件上, 才可以使用这些 `QAction`
 
+---
 
+**常用 UI 设计控件** <p>
+***常用输入显示控件***
+- QLabel
+- QLineEdit
+  - QLabel 用于显示字符串, QLineEdit 用于显示和输入字符串, 这两个类都有如下两个函数用于读取和设置显示字符串:
+    - `QString text() const`
+    - `void setText(const QString &)`
+- QSpinBox
+- QDoubleSpinBox
+  | 属性名称 | 描述 |
+  | :-: | :-: |
+  | prefix | 数字显示的前缀, 例如 '$', 前缀不会被获取, 仅作显示的效果 |
+  | suffix | 数字显示的后缀, 例如 'kg', 后缀不会被获取, 仅作显示的效果 |
+  | minimum | 数值范围的最小值, 如 0 |
+  | maximum | 数值范围的最大值, 如 255 |
+  | singlestep | 步长, 点击右侧上下调整按钮时的单步改变值, 如 1、0.1 等 |
+  | value | 当前显示的值, 不包含前缀 |
+  | displayIntegerBase | QSpinBox 特有的属性, 显示整数使用的进制, 如 2 表示而进制 |
+  | decimals | QDoubleSpin 特有的属性, 显示数值的小数位置, 如 2 显示两位小数 |
+
+***日期时间和日历控件***
+- 日期时间类型
+  - QTime : 时间数据类型, 仅表示时间, 如: 15:23:20
+  - QDate : 日期数据类型, 仅表示日期, 如: 2023-08-16
+  - QDateTime : 日期时间数据类型, 表示日期和时间, 如 2023-08-16 15:23:20
+- 日记时间控件
+  - QTimeEdit : 编辑和显示时间的控件
+  - QDateEdit : 编辑和显示日期的控件
+  - QDateTimeEdit : 编辑和显示日期时间的控件
+  - QCalendarWidget : 一个用日历形式选择日期的控件
+- QCalendarWidget 日历控件
+  - 信号
+    - `void QCalendarWidget::selectionChanged()`
+
+***QComboBox 和 QPlainTextEdit***
+- QComboBox
+  - 下拉列表框控件类
+  - 提供一个下拉列表供用户选择, 也可以直接当作一个 `QLineEdit` 用作输入
+  - 每个项(item, 或称列表项)可以关联一个 `QVariant` 类型的变量, 用于存储一些不可见数据
+    - `QVariant` 是一个非常通用的类型, 几乎所有类都能转换为 `QVariant` , 然后再通过 `toX` 函数转换为原类型
+  - 常用函数
+    - 添加项 <p>
+      `void addItem(const QString& text, const QVariant& userData = QVariant())` <p>
+      `void addItem(const QIcon& icon, const QString& text, const QVariant& userData = QVariant())`
 
