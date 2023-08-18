@@ -18,6 +18,12 @@ public:
 private slots:
     void on_btnListInit_clicked();
 
+    void on_btnCityZone_clicked();
+
+    void on_cmbSimple_currentTextChanged(const QString &arg1);
+
+    void on_cmbCityZone_currentTextChanged(const QString &arg1);
+
 private:
     Ui::Widget *ui;
 };

@@ -41,8 +41,43 @@ void Widget::on_btnCityZone_clicked() {
     cityZone.insert("西安", 29);
 
     ui->cmbCityZone->clear();
+    // QT foreach 用法
+    // foreach (varItem , Items)  // foreach(variable, container)
+    // varItem(或称variable) 是容器 Items(或称container)中的一个项
+    // 相当于: variable = container.item 遍历会从头遍历到尾
     foreach (const QString& str, cityZone.keys()) {
         ui->cmbCityZone->addItem(str, cityZone.value(str));
     }
+}
+
+// 简单组合框选项变化时
+// currentIndexChanged(const QString& arg1) 在 QT 6.2 版本中已经弃用
+void Widget::on_cmbSimple_currentTextChanged(const QString &arg1) {
+    ui->plainTextEdit->appendPlainText(arg1);
+}
+
+// 城市 + 区号 组合框选项变化时
+void Widget::on_cmbCityZone_currentTextChanged(const QString &arg1) {
+    // currentData() 是 QComboBox 类的成员函数, 返回值为 QVariant, 最后调用 .toString 函数
+    QString zone = ui->cmbCityZone->currentData().toString();
+    ui->plainTextEdit->appendPlainText(arg1 + " : " + zone);
+}
+
+// 可编辑
+void Widget::on_chkEditable_clicked(bool checked) {
+    ui->cmbSimple->setEditable(checked);
+}
+
+// 清除
+void Widget::on_btnListClear_clicked() {
+    ui->cmbSimple->clear();
+}
+
+// 文本框内容添加到 ComboBox
+void Widget::on_btnAddText2Cmb_clicked() {
+    QTextDocument* doc = ui->plainTextEdit->document(); // 文件对象
+    int blockCnt = doc->blockCount();                 // 一个回车符就是一个 Block
+    QIcon icon(":/aim.ico");
+
 }
 
