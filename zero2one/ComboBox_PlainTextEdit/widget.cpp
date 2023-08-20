@@ -1,6 +1,10 @@
 #include "widget.h"
 #include "ui_widget.h"
 
+#include <QMap>
+#include <QTextBlock>
+#include <QTextDocument>
+
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Widget)
@@ -77,7 +81,22 @@ void Widget::on_btnListClear_clicked() {
 void Widget::on_btnAddText2Cmb_clicked() {
     QTextDocument* doc = ui->plainTextEdit->document(); // 文件对象
     int blockCnt = doc->blockCount();                 // 一个回车符就是一个 Block
-    QIcon icon(":/aim.ico");
+    QIcon icon(":/icons/aim.ico");
+    ui->cmbSimple->clear();
+    for(int i = 0; i < blockCnt; i++) {
+        QTextBlock textLine = doc->findBlockByLineNumber(i);
+        QString str = textLine.text();
+        ui->cmbSimple->addItem(icon, str);
+    }
+}
 
+// 清空文本
+void Widget::on_btnTextClear_clicked() {
+    ui->plainTextEdit->clear();
+}
+
+// Read-Only
+void Widget::on_chkReadOnly_clicked(bool checked) {
+    ui->plainTextEdit->setReadOnly(checked);
 }
 

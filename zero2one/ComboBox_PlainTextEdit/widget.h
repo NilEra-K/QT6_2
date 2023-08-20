@@ -24,6 +24,16 @@ private slots:
 
     void on_cmbCityZone_currentTextChanged(const QString &arg1);
 
+    void on_chkEditable_clicked(bool checked);
+
+    void on_btnListClear_clicked();
+
+    void on_btnAddText2Cmb_clicked();
+
+    void on_btnTextClear_clicked();
+
+    void on_chkReadOnly_clicked(bool checked);
+
 private:
     Ui::Widget *ui;
 };
