@@ -34,6 +34,8 @@ private slots:
 
     void on_chkReadOnly_clicked(bool checked);
 
+    void on_plainTextEdit_customContextMenuRequested(const QPoint &pos);
+
 private:
     Ui::Widget *ui;
 };

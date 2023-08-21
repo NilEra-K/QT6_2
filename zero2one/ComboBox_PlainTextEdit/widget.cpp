@@ -4,6 +4,7 @@
 #include <QMap>
 #include <QTextBlock>
 #include <QTextDocument>
+#include <QMenu>
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -98,5 +99,25 @@ void Widget::on_btnTextClear_clicked() {
 // Read-Only
 void Widget::on_chkReadOnly_clicked(bool checked) {
     ui->plainTextEdit->setReadOnly(checked);
+}
+
+// 添加自定义右键菜单
+void Widget::on_plainTextEdit_customContextMenuRequested(const QPoint &pos) {
+    // 创建菜单对象
+    QMenu* menu = new QMenu;
+
+    // 添加菜单项
+    menu->addAction(ui->actUndo);
+    menu->addAction(ui->actRedo);
+    menu->addSeparator(); // 分隔线
+    menu->addAction(ui->actCut);
+    menu->addAction(ui->actCopy);
+    menu->addAction(ui->actPaste);
+    menu->addAction(ui->actDelete);
+    menu->addSeparator(); // 分隔线
+    menu->addAction(ui->actSeleteAll);
+
+    // 在指定位置显示右键菜单
+    menu->exec(QCursor::pos());
 }
 
