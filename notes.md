@@ -231,14 +231,111 @@ QT 框架中的模块分为两大类:
   - 信号
     - `void QCalendarWidget::selectionChanged()`
 
-***QComboBox 和 QPlainTextEdit***
-- QComboBox
-  - 下拉列表框控件类
-  - 提供一个下拉列表供用户选择, 也可以直接当作一个 `QLineEdit` 用作输入
-  - 每个项(item, 或称列表项)可以关联一个 `QVariant` 类型的变量, 用于存储一些不可见数据
-    - `QVariant` 是一个非常通用的类型, 几乎所有类都能转换为 `QVariant` , 然后再通过 `toX` 函数转换为原类型
-  - 常用函数
-    - 添加项 <p>
-      `void addItem(const QString& text, const QVariant& userData = QVariant())` <p>
-      `void addItem(const QIcon& icon, const QString& text, const QVariant& userData = QVariant())`
+***QComboBox***
+- 下拉列表框控件类
+- 提供一个下拉列表供用户选择, 也可以直接当作一个 `QLineEdit` 用作输入
+- 每个项(item, 或称列表项)可以关联一个 `QVariant` 类型的变量, 用于存储一些**不可见数据**
+  - 在某些情况下, 我们可能希望将更多的数据与每个选项相关联, 例如一个整数、一个自定义对象等; 可以使用 `QVariant` 来保存和传递这些额外的数据
+  - 可以使用 `QVariant` 构造函数将数据包装成 `QVariant` 对象, 然后使用 `addItem()` 函数将带有相关数据的选项添加到 `QComboBox` 中
+  - 在需要访问选定的选项及其关联的数据时, 可以使用 `currentData()` 函数获取与选定选项相关联的 `QVariant` 数据
+    ```
+    // 演示如何在 QComboBox 中添加带有相关数据的选项, 并使用 QVariant 来检索数据
+    #include <QApplication>
+    #include <QComboBox>
+    #include <QDebug>
+
+    int main(int argc, char *argv[]) {
+        QApplication app(argc, argv);
+
+        QComboBox comboBox;
+
+        // 添加带有相关数据的选项
+        int intValue = 42;
+        QString stringValue = "Hello, QVariant!";
+        QVariant variantInt(intValue);
+        QVariant variantString(stringValue);
+
+        comboBox.addItem("Option 1", variantInt);
+        comboBox.addItem("Option 2", variantString);
+
+        // 获取当前选中项的数据
+        QVariant currentData = comboBox.currentData();
+        if (currentData.canConvert<int>()) {
+            int selectedInt = currentData.toInt();
+            qDebug() << "Selected Int:" << selectedInt;
+        } else if (currentData.canConvert<QString>()) {
+            QString selectedString = currentData.toString();
+            qDebug() << "Selected String:" << selectedString;
+        }
+        comboBox.show();
+        return app.exec();
+    }
+    ```
+  - `QVariant` 是一个非常通用的类型, 几乎所有类都能转换为 `QVariant` , 类似于 `union` 联合 , 然后再通过 `toX` 函数转换为原类型
+- 常用函数
+  - 添加项 <p>
+    `void addItem(const QString& text, const QVariant& userData = QVariant())` <p>
+    `void addItem(const QIcon& icon, const QString& text, const QVariant& userData = QVariant())`
+  - 访问项 <p>
+    **返回当前项的序号, 从 0 开始 :** `int currentIndex()` <p>
+    **返回当前项的文字 :** `QString currentText()` <p>
+    **返回当前项的关联数据 :** `QVariant currentData(int role=Qt::UserRole)` <p>
+    **返回指定索引号的项的文字 :** `QString itemText(int index)` <p>
+    **返回指定索引号的项的关联数据 :** `QVariant itemData(int index, int role=Qt::UserRole)` <p>
+    **返回项的个数 :** `int count()`
+  - 常用信号 <p>
+    `void currentIndexChanged(int index)` <p>
+    `void currentIndexChanged(const QString& text)`
+
+***QPlainTextEdit***
+- 用于编辑多行文本的编辑器, 可以编辑普通文本
+- `QPlainTextEdit` 提供 `cut()`、`copy()`、`paste()`、`undo()`、`redo()`、`clear()`、`selectAll()` 等标准功能的槽函数, `QPlainTextEdit` 还提供一个标准的右键快捷菜单
+- `QPlainTextEdit` 常用函数
+  - 添加项字符串 <p>
+    `QPlainTextEdit::appendPlainText(const QString& text)`
+  - 读取所有文字
+    `QString QPlainTextEdit::toPlainTextEdit() const`
+  - 逐行读取需要使用 `QTextDocument` 类<p>
+    `QTextDocument* QPlainTextEdit::document() const` <p>
+    `int QTextDocument::blockCount()` <p>
+    `QTextBlock QTextDocument::findBlockByNumber(int blockNumber)`
+- 常用信号 <p>
+  **为信号生成槽函数, 在槽函数中生成 QPlainTextEdit 的标准右键菜单** `customContextMenuRequested()`
+- 自定义的右键菜单需要手动设置, 在 `QPlainTextEdit` 控件的 `contextMenuPolicy` 属性中设置值为 `Qt::CustomContextMenu` 可以将指定的自定义右键菜单进行显示
+- 需要注意的是, 右键菜单显示的时候需要指定位置, 我们一般不使用默认的位置, 而是希望该位置和我们期待的位置重合
+
+***QListWidget***
+- QT 中用于项 (Item) 处理的组件有两类 :
+  - **Item Views (包括 QListView、QTableView、QTreeView)**
+  - **Item Widgets(包括 QListWidget、QTableWidget、QTreeWidget)**
+- QListWidget 提供一个基于 *项* 的列表控件
+- 常用函数
+  - 添加项 <p>
+    `void addItem(const QString& label)` <p>
+    `void addItem(QListWidgetItem* item)` <p>
+    `void addItems(const QStringList& labels)`
+  - 插入项 <p>
+    `void insertItem(int row, QListWidgetItem* item)` <p>
+    `void insertItem(int row, const QString& label)` <p>
+    `void insertItems(int row, const QStringList& labels)` <p>
+  - 删除项 <p>
+    `QListWidgetItem* takeItem(int row)` 按照行号删除相应的项, 需要注意的是, 该函数只是再控件列表中将该项移除, 在内存中并没有移除, 我们需要手动通过 `delete` 移除
+  - 获取项 <p>
+    `QListWidgetItem* item(int row) const`
+    `QListWidgetItem* itemAt(const QPoint& p) const`
+    `QListWidgetItem* itemAt(int x, int y) const`
+  - 常用信号 <p>
+    `void currentItemChanged(QListWidgetItem* current, QListWidgetItem* previous)` <p>
+    `void currentRow(int currentRow)`
+- QListWidgetItem 是 QListWidget 中的一个项
+
+***QToolButton***
+
+***QToolBox***
+
+***QTabWidget***
+
+***QSplitter***
+
+
 
