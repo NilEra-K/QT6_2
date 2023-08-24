@@ -1,5 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QMessageBox>
+#include <QMenu>
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -7,6 +10,36 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     setCentralWidget(ui->splitter);
+
+    // 为 QToolButton 设置 Action
+    ui->tBtnListInit->setDefaultAction(ui->actListInit);
+    ui->tBtnListClear->setDefaultAction(ui->actListClear);
+    ui->tBtnItemInsert->setDefaultAction(ui->actItemInsert);
+    ui->tBtnItemAppend->setDefaultAction(ui->actItemAppend);
+    ui->tBtnItemDelete->setDefaultAction(ui->actItemDelete);
+
+    ui->tBtnSelAll->setDefaultAction(ui->actSelAll);
+    ui->tBtnSelInvs->setDefaultAction(ui->actSelInvs);
+    ui->tBtnSelNone->setDefaultAction(ui->actSelNone);
+
+    // 创建下拉菜单
+    QMenu* menuSelection = new QMenu(this); // 创建项选择弹出式菜单
+    menuSelection->addAction(ui->actSelAll);
+    menuSelection->addAction(ui->actSelNone);
+    menuSelection->addAction(ui->actSelInvs);
+    // 设置下拉菜单和 tBtnSelPopup 按钮进行绑定
+    ui->tBtnPopup->setPopupMode(QToolButton::MenuButtonPopup);
+    ui->tBtnPopup->setDefaultAction(ui->actSelPopup);
+    ui->tBtnPopup->setMenu(menuSelection);
+
+    // 工具栏添加带有下拉菜单的按钮
+    QToolButton* btn = new QToolButton(this);
+    btn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    btn->setPopupMode(QToolButton::InstantPopup);
+    btn->setDefaultAction(ui->actSelPopup);
+    btn->setMenu(menuSelection);
+    ui->toolBar->addSeparator();
+    ui->toolBar->addWidget(btn);
 }
 
 MainWindow::~MainWindow()
@@ -63,13 +96,6 @@ void MainWindow::on_actItemAppend_triggered() {
     ui->listWidget->addItem(item);
 }
 
-// 删除当前项
-void MainWindow::on_action_triggered() {
-    int rowNo = ui->listWidget->currentRow();
-    QListWidgetItem* item = ui->listWidget->takeItem(rowNo);
-    delete item;
-}
-
 // 清除列表
 void MainWindow::on_actListClear_triggered() {
     ui->listWidget->clear();
@@ -104,6 +130,44 @@ void MainWindow::on_actSelInvs_triggered() {
             item->setCheckState(Qt::Checked);               // 设为选中状态
         }
     }
+}
 
+// 当前项发生变化时, 会发出 currentItemChanged() 信号
+void MainWindow::on_listWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous) {
+    QString str;
+    if(current != NULL) {
+        if(previous == NULL) {
+            str = "当前项 : " + current->text();
+        } else {
+            str = "前一项 : " + previous->text() + " 当前项 : " + current->text();
+        }
+        ui->editCurItem->setText(str);
+    }
+}
+
+// 可编辑
+void MainWindow::on_chkEditable_clicked(bool checked) {
+    QListWidgetItem* item;
+    int cnt = ui->listWidget->count();
+    for(int i = 0; i < cnt; i++) {
+        item = ui->listWidget->item(i);
+        if(checked) {
+            item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsEditable);
+        } else {
+            item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
+        }
+    }
+}
+
+// 删除当前项
+void MainWindow::on_actItemDelete_triggered() {
+    int rowNo = ui->listWidget->currentRow();
+    QListWidgetItem* item = ui->listWidget->takeItem(rowNo);
+    delete item;
+}
+
+// 项选择
+void MainWindow::on_actSelPopup_triggered() {
+    QMessageBox::information(this, "QToolButton", "Click SelPopup");
 }
 
