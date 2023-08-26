@@ -330,12 +330,53 @@ QT 框架中的模块分为两大类:
 - QListWidgetItem 是 QListWidget 中的一个项
 
 ***QToolButton***
-
-***QToolBox***
-
-***QTabWidget***
+- 使用 `void QToolButton::setDefaultAction(QAction* action)` 来实现 `QToolButton` 和 `QAction` 之间的关联
 
 ***QSplitter***
+- 可以用于分割两部分控件
+
+---
+
+**QT Model/View 模型**
+- **Model/View** 结构是 QT 中用户界面组件显示与编辑数据的一种结构
+  - View(视图) 是显示和编辑数据的界面组件
+  - Model(模型) 是视图与原始数据之间的接口
+- GUI 应用程序的一个很重要的功能是由用户在界面上编辑和修改数据, 典型的**如数据库应用程序** , 在数据库应用程序中, 用户在界面上执行各种操作, 实际上是修改了界面组件相关的数据库内的数据
+- **将界面组件与所编辑的数据分离开来 , 又通过数据源的方式连接起来** , 是处理界面与数据的一种较好的方式
+- Model/View 的基本结构如图:
+  ![](../QT6_2/src/ModelViewBase.png)
+  - **数据(Data) :** 实际的数据, 可能在内存中, 可能在文件中, 也可能在数据库中
+  - **视图(View) :** 屏幕上的**界面组件**
+  - **模型(Model) :** 与实际数据通信, 并为视图组件提供数据接口
+  - **代理(Delegate) :** 可以让用户定制数据的界面和编辑方式
+- 模型、视图和代理之间使用信号与槽通信
+  - 源数据发生变化时, 模型发射信号通知视图组件
+  - 用户再界面操作数据时, 视图发射信号
+  - 编辑数据时, 代理发射信号告知模型和视图编辑器目前的状态
+- **模型**
+  ![](../src/../QT6_2/src/ModelStruct.png)
+  - 抽象类不能直接使用, 需要子类继承来实现一些纯虚函数, QT 提供了一些模型类用于项数据处理, 常见的几个类如下表所示——
+    | Model 类 | 用途 |
+    | :-: | :-: |
+    | QStringListModel | 用于处理字符串列表数据的数据模型类 |
+    | QStandardItemModel | 标准的基于项数据的数据模型类, 每个项数据可以是任何数据类型 |
+    | QFileSystemModel | 计算机上文件系统的数据模型类 |
+    | QSortFilterProxyModel | 用于数据库SQL查询结果的数据模型类 |
+    | QSqlQueryModel | 用于数据库SQL查询结果的数据模型类 |
+    | QSqlTableModel | 用于数据库的一个数据表的数据模型类 |
+    | QSqlRelationalTableModel | 用于关系型数据表的数据模型类 |
+- **视图**
+  ![](../src/../QT6_2/src/ViewStruct.png)
+  - 视图组件(View) 就是现实数据模型的数据的界面组件, QT 提供的视图组件如下——
+    | View 类 | 用途 |
+    | :-: | :-: |
+    | QListView | 用于显示单列的列表数据, 适用于一维数据的操作 |
+    | QTreeView | 用于显示树状结构数据, 适用于树状结构数据的操作 |
+    | QTableView | 用于显示表格状数据, 适用于二维表格型数据的操作 |
+    | QColumnView | 用多个 QListView 显示树状层次结构, 树状结构的一个层用一个 QListView 显示 |
+    | QHeaderView | 提供行表头活列表头的视图组件, 如 QTableView 的行表头和列表头 |
+  - QListWidget、QTableWidget、QTreeWidget 是其基类的简便类, 适用于数据量
+  - 通过 `setModel()` 函数设置视图
 
 
 
