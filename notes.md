@@ -377,6 +377,70 @@ QT 框架中的模块分为两大类:
     | QHeaderView | 提供行表头活列表头的视图组件, 如 QTableView 的行表头和列表头 |
   - QListWidget、QTableWidget、QTreeWidget 是其基类的简便类, 适用于数据量
   - 通过 `setModel()` 函数设置视图
+- **代理**
+  ![](../QT6_2/src/DelegateStruct.png)
+  - 代理就是在视图组件上为编辑数据提供编辑器
+  - 代理负责从数据模型获取相应的数据, 然后显示在编辑器里, 修改数据后, 又将其保存到数据模型中
+  - **QAbstractItemDelegate** 是所有代理类的基类, 作为抽象类, 它不能直接使用, 它的一个子类 **QStyledItemDelegate**, 是 QT 的视图组件缺省使用的代理类
+  - 对于一些特殊的数据编辑要求, 可以从 **QStyledItemDelegate** 继承创建自定义代理类
+- **相关概念**
+  - 数据模型的基本结构
+    ![](../QT6_2/src/MV-BasicStruct.png)
+  - 模型索引
+    - **`QModelIndex`** 表示模型索引的类
+    - 模型索引提供数据存取的一个临时指针, 用于通过数据模型提取或修改数据
+  - 行号和列号
+    - 表格数据模型中的三个数据项 A、B、C , 获取其模型索引的代码是: <p>
+      `QModelIndex indexA = model->index(0, 0, QModelIndex())` <p>
+      `QModelIndex indexB = model->index(1, 1, QModelIndex())` <p>
+      `QModelIndex indexC = model->index(2, 1, QModelIndex())`
+  - 父项
+    - 树状数据模型, 节点 A 和 节点 C 的父节点是顶层节点, 获取模型索引的代码是: <p>
+      `QModelIndex indexA = model->index(0, 0, QModelIndex())` <p>
+      `QModelIndex indexC = model->index(2, 1, QModelIndex())` <p>
+    - 节点 B 的父节点是节点 A, 节点 B的模型索引由以下代码生成: <p>
+      `QModelIndex indexB = model->index(1, 0, indexA)`
+  - 项的角色 (enum Qt::ItemDataRole)
+    - `DisplayRole` 数据是现实的字符串
+    - `DecorationRole` 是用于装饰显示的属性
+    - `ToolTipRole` 定义了鼠标的提示信息
 
+**模型类 —— QFileSystemModel**
+- QFileSystemModel 提供了一个可用于访问本机文件系统的数据模型
+- QFileSystemModel 和视图结合使用, 可以显示本机上的文件系统
+- 常用函数
+  - `QString rootPath() const`
+  - `bool isDir(const QModelIndex& index) const`
+  - `QString filePath(const QModelIndex& index) const`
+  - `QString fileName(const QModelIndex& index) const`
+  - `QString type(const QModelIndex& index) const`
+  - `qint64 size(const QModelIndex& index) const`
+  - ...
 
+**模型类 —— QStringListModel**
+- `QStringListModel` 用于处理字符串列表的数据类型, 他可以作为 `QListView` 的数据模型, 在界面上显示和编辑字符串列表
+- 常用函数
+  - `void setString(const QStringList& string)`
+  - `bool insertRows(int row, int count, const QModelIndex& parent = QModelIndex)`
+  - `bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex)`
+  - `bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole)`
+
+**模型类 —— QStandardItemModel**
+- **QstandardltemModel** 是标准的以项数据 (Item Data) 为基础的标准数据模型类
+- 通常与 **QTableView** 组合成 **Model/View** 结构, 实现通用的二维数据的管理功能
+- 每个项是一个 **QStandardltem** 类的变量, 用于存储项的数据、字体格式、对齐方式等
+- ***相关类***
+  - **QTabelView**
+    - 二维数据表视图组件
+    - 有多个行和多个列, 每个基本显示单元是一个单元格
+    - 通过 `setModel()` 函数设置一个 `QStandardItemModel` 类的数据模型
+    - 一个单元格显示 `QStandardItemModel` 数据模型中的一个项
+  - **QItemSelectionModel**
+    - 一个用于跟踪视图组件的单元格选择状态的类
+    - 当在 `QTabelView` 中选择某个单元格或多个单元格时, 通过 `QItemSelectionModel` 可以获得选中的单元格的模型索引, 为单元格的选择提供方便
+- ***几个类的关系***
+  - `QTableView` 是界面视图组件
+  - 其关联的的数据模型是 `QStandardItemModel`
+  - 关联的项选择模型是 `QItemSelectionModel`
+  - `QStandardItemModel` 的数据管理的基本单元是 `QStandardItem`
 
