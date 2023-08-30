@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>929</width>
     <height>600</height>
    </rect>
   </property>
@@ -51,8 +51,8 @@
    <addaction name="actAlignLeft"/>
    <addaction name="actAlignCenter"/>
    <addaction name="actAlignRight"/>
-   <addaction name="actBold"/>
    <addaction name="actItatic"/>
+   <addaction name="actBold"/>
    <addaction name="separator"/>
    <addaction name="actExit"/>
   </widget>
@@ -188,22 +188,10 @@
     <string>Ctrl+R</string>
    </property>
   </action>
-  <action name="actBold">
-   <property name="icon">
-    <iconset resource="res.qrc">
-     <normaloff>:/icons/bld.bmp</normaloff>:/icons/bld.bmp</iconset>
-   </property>
-   <property name="text">
-    <string>粗体</string>
-   </property>
-   <property name="toolTip">
-    <string>粗体</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+B</string>
-   </property>
-  </action>
   <action name="actItatic">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="res.qrc">
      <normaloff>:/icons/itl.bmp</normaloff>:/icons/itl.bmp</iconset>
@@ -216,6 +204,27 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actBold">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/icons/bld.bmp</normaloff>:/icons/bld.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>粗体</string>
+   </property>
+   <property name="toolTip">
+    <string>粗体</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
    </property>
   </action>
  </widget>

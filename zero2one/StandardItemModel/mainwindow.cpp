@@ -59,7 +59,10 @@ void MainWindow::on_CurrentChanged(const QModelIndex& current, const QModelIndex
 // 打开
 void MainWindow::on_actOpen_triggered() {
     QString curPath = QCoreApplication::applicationDirPath();
-    QString fileName = QFileDialog::getOpenFileName(this, "打开文件", curPath, "学生信息文件(*.txt);;所有文件(*.*)"); // 使用两个分号隔开, 可以设置所需多个不同的文件类型
+
+    // 调用 QFileDialog::getOpenFileName() 函数, 弹出文件选择窗口, 进行文件选择
+    // 使用两个分号隔开, 可以设置所需多个不同的文件类型
+    QString fileName = QFileDialog::getOpenFileName(this, "打开文件", curPath, "学生信息文件(*.txt);;所有文件(*.*)");
     if(fileName.isEmpty()) {
         return;
     }
@@ -68,7 +71,7 @@ void MainWindow::on_actOpen_triggered() {
     if(file.open(QIODevice::ReadOnly | QIODevice::Text)) { // 打开文件
         QTextStream stream(&file);                  // 用文本流读取文件
         stream.setEncoding(QStringConverter::Utf8); // 在 QT6 中, setCodec() 方法已经被弃用
-                                                    // 使用 setEncoding(QStringConverter::Encoding)
+                                                    // 使用 setEncoding(QStringConverter::Encoding), 设置打开文件字符集格式
         ui->plainTextEdit->clear();
         while(!stream.atEnd()) { // 当读取位置未到达文件尾时
             QString str = stream.readLine();
@@ -85,5 +88,198 @@ void MainWindow::on_actOpen_triggered() {
 void MainWindow::initModelFromStringList(QStringList& fileContent) {
     int rowCnt = fileContent.count();   // 文本行数, 第一行是表头
     model->setRowCount(rowCnt - 1);
+
     // 设置表头
+    QString header = fileContent.at(0); // 学号 姓名 出生日期 性别 联系方式
+    // QT 5 中的方法, 在 QT 6中已经无法使用 QRegExp 类, 且用 QRegularExpression 类无法替代
+    // QStringList headerList = header.split(QRegularExpression("\\s+"), QString::SectionSkipEmpty);
+    // 这里设置以空格分割会报错, 因此修改为以 '\t' 分割
+    QStringList headerList = header.split(QLatin1Char('\t'), Qt::SkipEmptyParts);
+    model->setHorizontalHeaderLabels(headerList);
+
+    // 设置内容
+    QStandardItem* item;
+    QStringList tmpList;
+    for(int i = 1; i < rowCnt; i++) {
+        QString lineText = fileContent.at(i);
+        tmpList = lineText.split(QLatin1Char('\t'), Qt::SkipEmptyParts);
+        for(int j = 0; j < COLUMNCOUNT; j++){
+            item = new QStandardItem(tmpList.at(j));
+            model->setItem(i-1, j, item);   // 为模型的某个行列位置设置 item
+        }
+    }
 }
+
+// 添加行
+void MainWindow::on_actAppend_triggered() {
+    QList<QStandardItem*> itemList;     // 创建一个项的列表
+    QStandardItem* item;
+    for(int i = 0; i < COLUMNCOUNT; i++) {
+        item = new QStandardItem("");   // 创建 item
+        itemList << item;
+    }
+    model->insertRow(model->rowCount(), itemList);  // 再尾端插入一行
+    QModelIndex index = model->index(model->rowCount()-1, 0);
+    selection->clearSelection();
+    selection->setCurrentIndex(index, QItemSelectionModel::Select);
+}
+
+// 插入行
+void MainWindow::on_actInsert_triggered() {
+    QList<QStandardItem*> itemList;
+    QStandardItem* item;
+    for(int i = 0; i < COLUMNCOUNT; i++) {
+        item = new QStandardItem("");
+        itemList << item;
+    }
+    QModelIndex index = selection->currentIndex();
+    model->insertRow(index.row(), itemList);
+    selection->clearSelection();
+    selection->setCurrentIndex(index, QItemSelectionModel::Select);
+}
+
+// 删除一行
+void MainWindow::on_actDelete_triggered() {
+    QModelIndex index = selection->currentIndex();
+    if(index.row() == model->rowCount() - 1) { // 如果是最后一行
+        model->removeRow(index.row());         // 删除一行
+    } else {
+        model->removeRow(index.row());
+        selection->setCurrentIndex(index, QItemSelectionModel::Select);
+    }
+}
+
+// 居左
+void MainWindow::on_actAlignLeft_triggered() {
+    if (!selection->hasSelection()){ // 如果未选中
+        return;
+    }
+
+    // 获取选择的单元的模型索引, 可以是多选
+    QModelIndexList selectedIndexes = selection->selectedIndexes();
+    for(int i = 0; i < selectedIndexes.count(); i++) {
+        QModelIndex index = selectedIndexes.at(i);
+        QStandardItem* item = model->itemFromIndex(index);
+        item->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);   // 水平居左对齐, 垂直居中对齐
+    }
+}
+
+// 居中
+void MainWindow::on_actAlignCenter_triggered() {
+    if (!selection->hasSelection()){
+        return;
+    }
+    QModelIndexList selectedIndexes = selection->selectedIndexes();
+    for(int i = 0; i < selectedIndexes.count(); i++) {
+        QModelIndex index = selectedIndexes.at(i);
+        QStandardItem* item = model->itemFromIndex(index);
+        item->setTextAlignment(Qt::AlignCenter | Qt::AlignVCenter);
+    }
+}
+
+// 居右
+void MainWindow::on_actAlignRight_triggered() {
+    if (!selection->hasSelection()){
+        return;
+    }
+    QModelIndexList selectedIndexes = selection->selectedIndexes();
+    for(int i = 0; i < selectedIndexes.count(); i++) {
+        QModelIndex index = selectedIndexes.at(i);
+        QStandardItem* item = model->itemFromIndex(index);
+        item->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    }
+}
+
+// 斜体
+void MainWindow::on_actItatic_triggered(bool checked) {
+    if (!selection->hasSelection()) {
+        return;
+    }
+    QModelIndexList selectedIndexes = selection->selectedIndexes();
+    for(int i = 0; i < selectedIndexes.count(); i++) {
+        QModelIndex index = selectedIndexes.at(i);
+        QStandardItem* item = model->itemFromIndex(index);
+        QFont font = item->font();
+        font.setItalic(checked);
+        item->setFont(font);
+    }
+}
+
+// 粗体
+void MainWindow::on_actBold_triggered(bool checked) {
+    if (!selection->hasSelection()) {
+        return;
+    }
+    QModelIndexList selectedIndexes = selection->selectedIndexes();
+    for(int i = 0; i < selectedIndexes.count(); i++) {
+        QModelIndex index = selectedIndexes.at(i);
+        QStandardItem* item = model->itemFromIndex(index);
+        QFont font = item->font();
+        font.setBold(checked);  // 设置字体是否是粗体
+        item->setFont(font);
+    }
+}
+
+// 另存文件
+void MainWindow::on_actSave_triggered() {
+    QString curPath = QCoreApplication::applicationDirPath();
+    QString fileName = QFileDialog::getSaveFileName(this, "另存文件", curPath, "学生文件(*.txt);;所有文件(*.*)");
+    if(fileName.isEmpty()) {
+        return;
+    }
+    QFile file(fileName);
+    if(!file.open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Truncate)) {
+        return; // 以读写, 文本, 覆盖的方式打开文件
+    }
+    QTextStream stream(&file);
+    stream.setEncoding(QStringConverter::Utf8);
+    QStandardItem* item;
+    QString str;
+    ui->plainTextEdit->clear();
+
+    // 获取表头文本
+    for(int i = 0; i < COLUMNCOUNT; i++) {
+        item = model->horizontalHeaderItem(i);
+        str = str + item->text() + "\t";
+    }
+    stream << str << "\n";
+
+    // 获取数据区文本
+    for(int i = 0; i < model->rowCount(); i++) {
+        str = "";
+        for(int j = 0; j < COLUMNCOUNT; j++) {
+            item = model->item(i, j);
+            str = str + item->text() + "\t";
+        }
+        stream << str << "\n";
+        ui->plainTextEdit->appendPlainText(str);
+    }
+    file.close();
+}
+
+// 模型数据预览
+void MainWindow::on_actModelData_triggered() {
+    QStandardItem* item;
+    QString str;
+    ui->plainTextEdit->clear();
+
+    // 获取表头文本
+    for(int i = 0; i < COLUMNCOUNT; i++) {
+        item = model->horizontalHeaderItem(i);
+        if(item == nullptr) {
+            break;
+        }
+        str = str + item->text() + "\t";
+    }
+
+    // 获取数据区文本
+    for(int i = 0; i < model->rowCount(); i++) {
+        str = "";
+        for(int j = 0; j < COLUMNCOUNT; j++) {
+            item = model->item(i, j);
+            str = str + item->text() + "\t";
+        }
+        ui->plainTextEdit->appendPlainText(str);
+    }
+}
+

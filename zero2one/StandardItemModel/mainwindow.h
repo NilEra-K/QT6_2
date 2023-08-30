@@ -6,8 +6,9 @@
 #include <QItemSelectionModel>
 #include <QLabel>
 #include <QFile>
-#include <QFileDialog>  // 文件对话框
-#include <QTextStream>  // 文本流
+#include <QFileDialog>          // 文件对话框
+#include <QTextStream>          // 文本流
+#include <QRegularExpression>   // 正则表达式类 QT 5 版本中为 QRegExp
 
 #define COLUMNCOUNT 5   // 文件固定为 5 列
 
@@ -28,6 +29,26 @@ private slots:
     void on_CurrentChanged(const QModelIndex& current, const QModelIndex& previous);
 
     void on_actOpen_triggered();
+
+    void on_actAppend_triggered();
+
+    void on_actInsert_triggered();
+
+    void on_actDelete_triggered();
+
+    void on_actAlignLeft_triggered();
+
+    void on_actAlignCenter_triggered();
+
+    void on_actAlignRight_triggered();
+
+    void on_actItatic_triggered(bool checked);
+
+    void on_actBold_triggered(bool checked);
+
+    void on_actSave_triggered();
+
+    void on_actModelData_triggered();
 
 private:
     void initUi(void);  // 初始化状态栏
