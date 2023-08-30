@@ -267,7 +267,7 @@ void MainWindow::on_actModelData_triggered() {
     for(int i = 0; i < COLUMNCOUNT; i++) {
         item = model->horizontalHeaderItem(i);
         if(item == nullptr) {
-            break;
+            continue;
         }
         str = str + item->text() + "\t";
     }
@@ -277,6 +277,9 @@ void MainWindow::on_actModelData_triggered() {
         str = "";
         for(int j = 0; j < COLUMNCOUNT; j++) {
             item = model->item(i, j);
+            if(item == nullptr) {
+                continue;
+            }
             str = str + item->text() + "\t";
         }
         ui->plainTextEdit->appendPlainText(str);
