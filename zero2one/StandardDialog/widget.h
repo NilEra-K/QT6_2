@@ -15,6 +15,27 @@ public:
     Widget(QWidget *parent = nullptr);
     ~Widget();
 
+private slots:
+    void on_btnOpenFile_clicked();
+
+    void on_btnOpenFiles_clicked();
+
+    void on_btnExistingDir_clicked();
+
+    void on_btnSaveFile_clicked();
+
+    void on_btnColor_clicked();
+
+    void on_btnFont_clicked();
+
+    void on_btnInputText_clicked();
+
+    void on_btnInputInt_clicked();
+
+    void on_btnInputFloat_clicked();
+
+    void on_btnInputItem_clicked();
+
 private:
     Ui::Widget *ui;
 };
