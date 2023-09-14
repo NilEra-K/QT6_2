@@ -6,24 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>690</width>
+    <height>465</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>自定义对话框</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTableView" name="tableView">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>751</width>
-      <height>511</height>
-     </rect>
-    </property>
-   </widget>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QTableView" name="tableView"/>
+    </item>
+   </layout>
   </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
@@ -38,13 +33,13 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actSetSiz"/>
+   <addaction name="actSetSize"/>
    <addaction name="actSetHeader"/>
    <addaction name="actLocate"/>
    <addaction name="separator"/>
    <addaction name="actExit"/>
   </widget>
-  <action name="actSetSiz">
+  <action name="actSetSize">
    <property name="icon">
     <iconset resource="res.qrc">
      <normaloff>:/icons/row.bmp</normaloff>:/icons/row.bmp</iconset>

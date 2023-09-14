@@ -4,19 +4,21 @@
 #include <QDialog>
 
 namespace Ui {
-class sizeDialog;
+class SizeDialog;
 }
 
-class sizeDialog : public QDialog
+class SizeDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit sizeDialog(QWidget *parent = nullptr);
-    ~sizeDialog();
-
+    explicit SizeDialog(QWidget *parent = nullptr);
+    ~SizeDialog();
+    void setRowColumn(int row, int col);
+    int rowCnt();
+    int columnCnt();
 private:
-    Ui::sizeDialog *ui;
+    Ui::SizeDialog *ui;
 };
 
 #endif // SIZEDIALOG_H

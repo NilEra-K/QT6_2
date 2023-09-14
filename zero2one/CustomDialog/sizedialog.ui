@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>sizeDialog</class>
- <widget class="QDialog" name="sizeDialog">
+ <class>SizeDialog</class>
+ <widget class="QDialog" name="SizeDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>373</width>
+    <width>401</width>
     <height>137</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>设置表格行数和列数</string>
+   <string>Dialog</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
         <string>设置表格行数列数</string>
@@ -45,7 +45,7 @@
        </layout>
       </widget>
      </item>
-     <item>
+     <item row="0" column="1">
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="QPushButton" name="btnOK">
@@ -68,5 +68,38 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>btnOK</sender>
+   <signal>clicked()</signal>
+   <receiver>SizeDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>296</x>
+     <y>42</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>200</x>
+     <y>68</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btnCancel</sender>
+   <signal>clicked()</signal>
+   <receiver>SizeDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>296</x>
+     <y>93</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>200</x>
+     <y>68</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
