@@ -10,17 +10,20 @@ CONFIG += c++17
 
 SOURCES += \
     headerdialog.cpp \
+    locatedialog.cpp \
     main.cpp \
     mainwindow.cpp \
     sizedialog.cpp
 
 HEADERS += \
     headerdialog.h \
+    locatedialog.h \
     mainwindow.h \
     sizedialog.h
 
 FORMS += \
     headerdialog.ui \
+    locatedialog.ui \
     mainwindow.ui \
     sizedialog.ui
 

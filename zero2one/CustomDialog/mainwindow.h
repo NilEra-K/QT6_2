@@ -19,10 +19,24 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+public slots:
+    // 响应对话框窗口的信号, 设置指定单元格的文本
+    void setCellText(int row, int column, QString& text);
+    // 响应对话框窗口的信号, 设置 actLocate 的使能状态
+    void setActLocateEnable(bool enable);
+
+signals:
+    // 当前单元格发生变化时, 发出信号
+    void cellIndexChanged(int row, int colNo);
+
 private slots:
     void on_actSetSize_triggered();
 
     void on_actSetHeader_triggered();
+
+    void on_tableView_clicked(const QModelIndex &index);
+
+    void on_actLocate_triggered();
 
 private:
     Ui::MainWindow *ui;
