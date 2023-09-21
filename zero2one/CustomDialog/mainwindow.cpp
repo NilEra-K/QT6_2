@@ -100,6 +100,6 @@ void MainWindow::on_actLocate_triggered() {
     // 主窗口发射信号, 更新对话框窗口 spinBox 的值
     connect(this, SIGNAL(cellIndexChanged(int,int)), dlgLocate, SLOT(setSpinValue(int,int)));
 
-    dlgLocate->show();  // 非模态方式显示
+    dlgLocate->show();  // 非模态方式显示,
 }
 
