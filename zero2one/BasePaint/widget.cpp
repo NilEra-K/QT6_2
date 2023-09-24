@@ -1,5 +1,6 @@
 #include "widget.h"
 #include "ui_widget.h"
+#include <QPixmap>
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -34,8 +35,19 @@ void Widget::paintEvent(QPaintEvent *event) {
     pen.setJoinStyle(Qt::BevelJoin);// 设置线的连接点样式
     painter.setPen(pen);
 
+    // 设置画刷
+    QBrush brush;
+    // brush.setColor(Qt::yellow);         // 设置画刷的颜色
+    // brush.setStyle(Qt::SolidPattern);   // 设置填充样式
+
+    QPixmap texturePixmap(":/edit.bmp");   // 设置填充图片
+    brush.setStyle(Qt::TexturePattern);    // 设置填充样式为纹理图案
+    brush.setTexture(texturePixmap);       // 如果是 QPixmap 对象就调用 setTexture
+                                           // 如果是 QImage 对象就调用 setTextureImage
+    painter.setBrush(brush);
 
     // 绘制图像
-
+    // painter.drawRect(rect); // 绘制矩形
+    painter.drawEllipse(QPoint(w/2, h/2), w/4, h/4);
 }
 
