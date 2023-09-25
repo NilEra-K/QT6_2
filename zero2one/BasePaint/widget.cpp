@@ -48,6 +48,22 @@ void Widget::paintEvent(QPaintEvent *event) {
 
     // 绘制图像
     // painter.drawRect(rect); // 绘制矩形
-    painter.drawEllipse(QPoint(w/2, h/2), w/4, h/4);
+    // painter.drawEllipse(QPoint(w/2, h/2), w/4, h/4); // 绘制椭圆形
+    // painter.drawArc(rect, 30 * 16, 120 * 16);        // 绘制弧线, 参数传入一个矩形、开始角和跨度角
+                                                        // 有一个重载
+    // painter.drawChord(rect, 30 * 16, 120 * 16);      // 绘制弦, 与绘制弧线相似
+    // painter.drawPie(rect,  30 * 16, 120 * 16);       // 绘制扇形
+    // 绘制封闭多边形、不封闭的多边形
+    QPoint points[6] = {
+        QPoint(w/4, h/2),
+        QPoint(3*w/8, h/4),
+        QPoint(5*w/8, h/4),
+        QPoint(3*w/4, h/2),
+        QPoint(5*w/8, 3*h/4),
+        QPoint(3*w/8, 3*h/4)
+    };
+    // painter.drawPolygon(points, 6);  // 封闭多边形
+    painter.drawPolyline(points, 6);    // 不封闭多边形(折线)
+
 }
 
