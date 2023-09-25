@@ -1,5 +1,12 @@
 # Notes 笔记
 
+**[补充] 参考相关博客** <p>
+- 虚函数相关
+  - **https://blog.csdn.net/zhang_cherry/article/details/108647349**
+  - **https://blog.csdn.net/xuebing1995/article/details/103695355**
+  - **https://blog.csdn.net/yuanchunsi/article/details/78833345**
+---
+
 **QT框架功能描述** <p>
 QT 框架中的模块分为两大类:
 - ***QT基本模块(Qt Essentials) :*** 提供了 Qt 在所有平台上的基本功能
@@ -443,4 +450,97 @@ QT 框架中的模块分为两大类:
   - 其关联的的数据模型是 `QStandardItemModel`
   - 关联的项选择模型是 `QItemSelectionModel`
   - `QStandardItemModel` 的数据管理的基本单元是 `QStandardItem`
+
+---
+
+**自定义代理**
+- `QTableView` 控件为每个单元格提供的是缺省的代理编辑控件, 即一个 `QLineEdit` 控件, 在编辑框里可以输入任何数据, 所以比较通用
+- 但是有些情况下, 希望根据数据的类型限定使用不同的编辑控件, 比如 : 性别更适合使用 `QComboBox` 控件
+- 要实现这样的功能, 就需要为某个列或单元格设置自定义控件
+  ![](../QT6_2/src/DelegateStruct.png)
+- 我们通常继承 `QStyledItemDelegate` 类来实现自定义代理
+
+**自定义代理类的基本设计要求**
+- 自定义代理控件, 必须实现如下4个函数:
+  - **`createEditor()` 函数 :** 创建用于编辑模型数据的 Widget 控件, 如一个 `QComboBox` 控件, 或者一个 `QSpinBox` 控件
+  - **`setEditorData()` 函数 :** 从数据模型获取数据, 供 Widget 控件进行编辑
+  - **`setModelData()` 函数 :** 将 Widget 上的数据更新到数据模型
+  - **`updateEditorGeometry()` 函数 :** 用于给 Widget 控件设置一个合适的大小
+
+---
+
+**标准对话框**
+- 5 种预定义的标准对话框
+  | 对话框 | 常用静态函数 | 函数功能 |
+  | :-: | :-: | :-: |
+  | **`QFileDialog`** <p> _文件对话框_ | `QString getOpenFileName()` | 选择打开一个文件 |
+  | - | `QStringList getOpenFileNames()` | 选择打开多个文件 |
+  | - | `QString getSaveFileName()` | 选择保存一个文件 |
+  | - | `QString getExistDirectory()` | 选择一个已有目录 |
+  | - | `QUrl getOpenFileUrl()` | 选择打开一个文件, 可选择远程网络文件 |
+  | **`QColorDialog`** <p> _颜色对话框_ | `QColor getColor()` | 选择颜色 |
+  | **`QFontDialog`** <p> _字体对话框_ | `QFont getFont` | 选择字体 |
+  | **`QInputDialog`** <p> _输入对话框_ | `QString getText()` | 输入单行文字 |
+  | - | `int getInt()` | 输入整数 |
+  | - | `double getDouble()` | 输入浮点数 |
+  | - | `QString getItem()` | 从一个下拉列表框中选择输入 |
+  | - | `QString getMultiLineText()` | 输入多行字符串 |
+  | **`QMessageBox`** <p> _消息框_ | `StandardButton inforMmation()` | 消息提示对话框 |
+  | - | `StandardButton question()` | 询问并获取是否确认的对话框 |
+  | - | `StandardButton warning()` | 警告信息提示对话框 |
+  | - | `StandardButton critical()` | 错误信息提示对话框 |
+  | - | `void about()` | 设置自定义信息的关于对话框 |
+  | - | `void aboutQt()` | 关于 Qt 的对话框 |
+
+  ( "`-`" 在此表中表示同上 )
+ 
+---
+
+**自定义对话框** <p>
+***自定义的不同调用方式***
+- 自定义对话框的设计一般从 **QDialog** 继承
+- 对话框的调用步骤
+  - 创建对话框
+  - 传递数据给对话框
+  - 显示对话框获取输入
+  - 判断对话框单机按钮的返回类型
+  - 获取对话框输入数据
+- 模态方式显示
+  - 会阻塞本程序中其它的窗口, 直到对话框关闭对话框显示时
+  - 返回 `DialogCode` 值
+  - 函数 `int exec()`
+- 非模态方式显示
+  - 对话框显示时, 其它的窗口依旧可以操作
+  - 函数: `void show()`
+- 关于 `setWindowFlag` 使用为 `setWindowFlags` 错误的问题
+  - `setWindowFlags` 使用的时候会先清除当前窗口的所有标志, 然后设置新的窗口标志, `Qt::Window` 这个标志被清除掉了
+  - `Qt::Window`, 当窗口基类是 `QWidget` 时, 如果为其设置父窗口, 窗口会以子窗口的形式出现在父窗口中, 这时窗口没有标题栏关闭按钮等, 如果想使子窗口与父窗口绑定, 而且子窗口以独立窗口的形式存在, 则需要设置子窗口属性为 `Qt::Window`
+  - 正确用法:
+    - `dlgSize->setWindowFlag(Qt::MSWindowsFixedSizeDialogHint);`
+    - `dlgSize->setWindowFlags(Qt::Window | Qt::MSWindowsFixedSizeDialogHint);`
+
+---
+
+**QT 绘图、坐标系统和坐标变换** <p>
+***`QPainter` 和 `QPaintDevice` 类***
+- `QPainter` 是用来进行绘图操作的类
+  - `QPainter` 绘图的主要属性:
+    - `pen` 属性 : 是一个 `QPen` 对象, 用于控制线条的颜色、宽度、线型等
+    - `brush` 属性 : 是一个 `QBrush` 对象, 用于设置一个区域的填充属性, 可以设置填充颜色、方式、渐变特性等, 还可以采用图片做材质填充
+    - `font` 属性 : 是一个 `QFont` 对象, 用于绘制文字时, 设置文字的字体样式、大小等属性
+- `QPaintDevice` 是一个可以使用 `QPainter` 进行绘图的抽象二维界面
+
+***坐标系统和坐标变换***
+- 常用的坐标变换函数
+  | 分组 | 函数原型 | 功能 |
+  | :-: | :-: | :-: |
+  | 坐标变换 | `void translate(qreal dx, qreal dy)` | 坐标系统平移一定的偏移量, 坐标原点平移到新的点 |
+  | 坐标变换 | `void rotate(qreal angle)` | 坐标系统顺时针旋转一个角度 |
+  | 坐标变换 | `void scale(qreal sx, qreal sy)` | 坐标系统缩放 |
+  | 坐标变换 | `void shear(qreal sh, qreal sv)` | 坐标系统做扭转变换 |
+  | 状态保存与恢复 | `void save()` | 保存 painter 当前状态, 就是将当前状态压入栈 |
+  | 状态保存与恢复 | `void restore()` | 恢复上一次状态, 就是在堆栈中弹出上次的状态 |
+  | 状态保存与恢复 | `void resetTransform` | 复位所有坐标变换 |
+
+
 
