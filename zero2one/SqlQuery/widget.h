@@ -2,6 +2,10 @@
 #define WIDGET_H
 
 #include <QWidget>
+#include <QSqlQuery>
+#include <QSqlError>
+#include <QSqlRecord>
+#include <QMessageBox>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
@@ -14,6 +18,14 @@ class Widget : public QWidget
 public:
     Widget(QWidget *parent = nullptr);
     ~Widget();
+
+private slots:
+    void on_btnSelect_clicked();
+
+    void on_btnInsert_clicked();
+
+private:
+    void loadDept();
 
 private:
     Ui::Widget *ui;
