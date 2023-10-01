@@ -83,7 +83,7 @@ void MainWindow::on_actInsert_triggered() {
     int ret = dlgEdit->exec();                                  // 以模态方式显示
     if(ret == QDialog::Accepted) { // "确定"按钮被按下
         QSqlRecord recData = dlgEdit->recordData();
-        query.prepare("INSERT INTO emp VALUES(:empNo, :empName, :gender, :deptId, :salary");
+        query.prepare("INSERT INTO emp VALUES(:empNo, :empName, :gender, :deptId, :salary)");
         query.bindValue(0, recData.value("empNo"));
         query.bindValue(1, recData.value("empName"));
         query.bindValue(2, recData.value("gender"));
@@ -94,9 +94,7 @@ void MainWindow::on_actInsert_triggered() {
         } else { // 执行成功后重新加载模型, 可以理解为刷新模型
             model->setQuery("SELECT * FROM emp ORDER BY empNo");
         }
-    } else {
-
-    }
+    } else {    }
 
     delete dlgEdit; // 使用后删除
     dlgEdit = nullptr;

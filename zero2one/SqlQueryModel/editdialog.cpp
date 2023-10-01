@@ -27,7 +27,7 @@ void EditDialog::setDept(const QMap<int, QString> &dept) {
 void EditDialog::setInsertRecord(QSqlRecord &recData) {
     setWindowTitle("插入数据");
     m_record = recData;                  // 保存到类中
-    qDebug() << m_record;
+    qDebug() << "m_record" << m_record;
     ui->editEmpNo->setReadOnly(false);   // empNo 编辑框可用
 }
 
@@ -36,7 +36,7 @@ QSqlRecord EditDialog::recordData() {
     m_record.setValue("empNo", ui->editEmpNo->text());
     m_record.setValue("empName", ui->editEmpName->text());
     m_record.setValue("gender", ui->cmbGender->currentText());
-    m_record.setValue("deptId", ui->cmbDept->currentText());
+    m_record.setValue("deptId", ui->cmbDept->currentData());
     m_record.setValue("salary", ui->dSpinSalary->value());
     return m_record;
 }
