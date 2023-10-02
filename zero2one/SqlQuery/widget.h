@@ -24,6 +24,10 @@ private slots:
 
     void on_btnInsert_clicked();
 
+    void on_btnUpdate_clicked();
+
+    void on_btnDelete_clicked();
+
 private:
     void loadDept();
 

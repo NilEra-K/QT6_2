@@ -23,6 +23,9 @@ public:
     // 设置插入的记录
     void setInsertRecord(QSqlRecord& recData);
 
+    // 设置插入的记录
+    void setUpdateRecord(QSqlRecord& recData);
+
     // 返回要插入的记录
     QSqlRecord recordData();
 

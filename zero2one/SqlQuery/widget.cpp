@@ -121,8 +121,44 @@ void Widget::on_btnInsert_clicked() {
     QMessageBox::information(this, "插入", "插入数据成功");
 }
 
-// 修改操作
+// 修改操作: 根据工号修改其他字段的值
 void Widget::on_btnUpdate_clicked() {
+    int empNo = ui->editEmpNo->text().toInt();            // 工号
+    QString empName = ui->editEmpName->text().trimmed();  // 姓名, trimmed() 用于消除空格
+    QString gender = ui->cmbGender->currentText();        // 性别
+    int deptId = ui->cmbDept->currentData().toInt();      // 部门编号
+    double salary = ui->dSpinSalary->value();             // 工资
 
+    QSqlQuery query;
+    // 执行如下 SQL 语句
+    // UPDATE emp SET empName='张三', gender='男', deptId=2, salary=12345.67 WHERE empNo=1010;
+    query.prepare("UPDATE emp SET empName=:name, gender=:gender,deptId=:id,salary=:sal WHERE empNo=:no");
+    query.bindValue(":name", empName);
+    query.bindValue(":gender", gender);
+    query.bindValue(":id", deptId);
+    query.bindValue(":sal", salary);
+    query.bindValue(":no", empNo);
+    if(!query.exec()) {
+        QMessageBox::critical(this, "修改", "修改数据失败\n" + query.lastError().text());
+        return;
+    }
+    QMessageBox::information(this, "修改", "修改数据成功");
+}
+
+// 删除操作: 根据工号删除
+void Widget::on_btnDelete_clicked() {
+    int empNo = ui->editEmpNo->text().toInt();
+    QSqlQuery query;
+    query.prepare("DELETE FROM emp WHERE empNo=?");
+    query.bindValue(0, empNo);
+    if(!query.exec()) {
+        QMessageBox::critical(this, "删除", "删除数据失败\n" + query.lastError().text());
+        return;
+    }
+    if(query.numRowsAffected() == 0) {
+        QMessageBox::critical(this, "删除", "没有匹配的数据");
+    } else {
+        QMessageBox::information(this, "删除", "删除数据成功");
+    }
 }
 

@@ -27,11 +27,22 @@ void EditDialog::setDept(const QMap<int, QString> &dept) {
 void EditDialog::setInsertRecord(QSqlRecord &recData) {
     setWindowTitle("插入数据");
     m_record = recData;                  // 保存到类中
-    qDebug() << "m_record" << m_record;
     ui->editEmpNo->setReadOnly(false);   // empNo 编辑框可用
 }
 
-// 返回要插入的记录, 将录入的数据保存到 m_record 中
+void EditDialog::setUpdateRecord(QSqlRecord &recData) {
+    setWindowTitle("更新记录");
+    ui->editEmpNo->setReadOnly(true);    // empNo 编辑框可用
+    ui->editEmpNo->setText(recData.value("empNo").toString());
+    ui->editEmpName->setText(recData.value("empName").toString());
+    ui->cmbGender->setCurrentText(recData.value("gender").toString());
+    ui->cmbDept->setCurrentText(m_dept.value(recData.value("deptId").toInt())); // 根据部门编号获取对应的值
+    ui->dSpinSalary->setValue(recData.value("salary").toDouble());
+    m_record = recData;                  // 保存到类中
+    // qDebug() << "m_record" << m_record;
+}
+
+// 返回要插入/修改(编辑)的记录, 将录入的数据保存到 m_record 中
 QSqlRecord EditDialog::recordData() {
     m_record.setValue("empNo", ui->editEmpNo->text());
     m_record.setValue("empName", ui->editEmpName->text());

@@ -28,9 +28,17 @@ private slots:
 
     void on_actInsert_triggered();
 
+    void on_actUpdate_triggered();
+
+    void on_tableView_doubleClicked(const QModelIndex &index);
+
+    void on_actDelete_triggered();
+
 private:
     void loadDataBase(const QString& dbName);   // 根据数据库名加载数据库
-    void loadDept();    // 读取 dept 表中的数据, 并保存到映射中
+    void loadDept();                            // 读取 dept 表中的数据, 并保存到映射中
+    void updateRecord(int recNo);               // 更新一条记录
+
 private:
     Ui::MainWindow *ui;
     QSqlDatabase db;                    // 数据库
