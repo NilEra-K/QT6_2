@@ -542,5 +542,180 @@ QT 框架中的模块分为两大类:
   | 状态保存与恢复 | `void restore()` | 恢复上一次状态, 就是在堆栈中弹出上次的状态 |
   | 状态保存与恢复 | `void resetTransform` | 复位所有坐标变换 |
 
+---
+
+**QT SQL 模块**
+- **QT 6.2.4 解决 MySQL 8.0 驱动问题 :** https://blog.csdn.net/oh_MY_G0D/article/details/133103148
+- **QT 6.2.4 解决 MySQL 8.0 驱动编译 :** https://blog.csdn.net/laomengnevergiveup/article/details/128848214
+- **驱动下载地址 :** https://github.com/thecodemonkey86/qt_mysql_driver/releases/tag/qmysql_6.2.4
+- 项目中使用**Qt SQL**模块, 需在项目配置文件中增加: `Qt += sql`
+  | 驱动名 | 数据库 |
+  | :-: | :-: |
+  | `QDB2` | IBM DB2 (7.1及以上版本) 数据库 |
+  | `QIBASE` | Borland InterBase 数据库 |
+  | `QMYSQL` | MysQL 数据库 |
+  | `QOCI` | Oracle 调用接口驱动 (Oracle Call Interface Driver) |
+  | `QODBC` | Open Database Connectivity (ODBC) , Microsoft的 SQL Server 数据库以及其他支持 ODBC 接口的数据库, 如Access |
+  | `QPSQL` | PostgreSQL (7.3及以上版本) 数据库
+  | `QSQLITE2` | SQLite 2数据库 |
+  | `QSQLITE` | SQLite 3数据库 |
+  | `QTDS` | Sybase Adaptive Server, 注意: 从 Qt 4.7 开始已过时 |
+- Qt SQL模块的主要类
+  | 类名称 | 功能描述 |
+  | :-: | :-: |
+  | `QSqlDatabase` | 用于建立与数据库的连接 |
+  | `QSqlError` | SQL数据库错误信息, 可以用于访问上一次出错的信息 |
+  | `QSqlQuery` | 执行各种SQL语句的类 |
+  | `QSqlQueryModel` | SQL查询结果集数据的**只读数据模型(data model)** , 用于 select 查询结果数据记录的只读显示 |
+  | `QSqlRecord` | 封装了数据记录操作的类 |
+- SQL模块使用步骤
+  - 创建数据库连接 `QSqlDatabase`
+    ```
+    // mysql -h localhost -u root -p[pwd] emp -P 3306
+    QSqlDatabase db = QSQLDatabase::addDatabase("驱动");
+    db.setHostname("主机名 或 IP地址");
+    db.setUserName("账号");
+    db.setPassword("密码");
+    db.setDatabaseName("数据库名");
+    db.setPort("端口号");
+    bool ok = db.open();
+    ```
+  - 执行 SQL 语句 `QSqlQuery`
+    - `bool exec(const QString& query)` : 执行 `query` 所对应的 SQL 语句
+    - `bool exec()` : 重载版本, 执行预编译的 SQL 语句 
+    - `seek(int n)` : `query` 指向结果集的**第 n 条**记录
+    - `first()` : `query` 指向结果集的**第 1 条**记录
+    - `last()` : `query` 指向结果集的**最后 1 条**记录
+    - `next()` : `query` 指向下一条记录, 每执行一次该函数, 便指向相邻的下一条记录
+    - `previous()` : `query` 指向上一条记录, 每执行一次该函数，便指向相邻的上一条记录
+    - `record()` : 获得现在指向的记录
+    - `value(int n)` : 获得属性的值, 其中 n 表示查询的第 n 个字段, 该函数返回 `QVariant` 类型的数据
+    - `at()` : 获得现在 `query` 指向的记录在结果集中的编号
+- **`QSqlQueryModel`** 类
+  - 数据库的操作一般需要将数据库的内容在界面上进行显示和编辑, Qt 采用 Model/View 结构进行数据库内容的界面显示
+  - QTableView是常用的数据库内容显示视图组件
+  - 用于数据库操作的数据模型类:
+    - `QSqlQueryModel` 只读的数据模型
+    - `QSqlTableModel` 普通的数据模型类型
+    - `QSqlRelationalTableModel` 关系模型数据模型类型
+  - **`QSqlQueryModel`** 常用函数
+    - `void clear()` 清除数据模型, 释放所有获得的数据
+    - `QSqlError lastError()` 返回上次的错误, 可获取错误的类型和文本信息
+    - `QSqlQuery query()` 返回当前关联的 `QSqlQuery` 对象
+    - `void setQuery(QSqlQuery &query)` 设置一个 `QSqlQuery` 对象, 获取数据
+    - `void setQuery(QString &query)` 设置一个 **SELETE** 语句创建查询, 获取数据
+    - `QSqlRecord record()` 返回一个空记录, 包含当前查询的字段信息
+    - `QSqlRecord record(int row)` 返回行号为 **row** 的记录
+    - `int rowCount()` 返回查询到的记录条数
+    - `int columnCount()` 返回查询的字段个数
+    - `void setHeaderData(int section, Qt::Orientation orientation, QVariant &value)` 设置表头数据, 一般用于设置字段的表头标题
+- **`QSqlRecord` 类**
+  - `QSqlRecord` 类记录了数据表的字段信息和一条记录的数据内容
+  - `QSqlRecord` 类常用函数
+    - `QVariant value(QString &name)` 返回字段名称为 **name** 的字段的值
+    - `void setValue(QString &name, QVariant &val)` 设置字段名称为 **name** 的字段的值为 **val**
+    - `QVariant value(int index)` 返回序号为 **index** 的字段的值
+    - `void setValue(int index, Qvariant &val)` 设置序号为 **index** 的字段的值为 **val** 
+
+---
+
+**QT 多线程**
+
+***QT 创建线程***
+- 继承 `QThread`
+  - 在 QT 中, `QThread` 类提供了一个平台独立的方式来管理线程, 每个 `QThread` 对象就是一个子线程
+  - **在 QT 应用程序中如果想要开启子线程, 一种简单的方式是 *继承*** `QThread`, 重写 `QThread::run()` 函数, 将来通过调用 `QThread::start()` 即可开启子线程, 让 `run()` 在子线程中执行 
+    ```
+    // QThread 类
+    class QThread {
+    public:
+        void start(...) {
+            run();
+        }
+    protected:
+        virtual void run() { // 虚函数
+            exec();
+        }
+    }
+
+    // 继承 QThread 类的的自定义线程类
+    class MyThread:public QThread {
+    protected:
+        void run(void) {
+            // 子线程要执行的功能
+        }
+    }
+
+    // 使用
+    MyThread thread;
+    thread.start();
+    ```
+- `QThread` 类常用函数
+  - 公有函数
+    | 函数 | 功能 |
+    | :-: | :-: |
+    | `bool isFinished()` | 线程是否结束 |
+    | `bool isRunning()` | 线程是否正在运行 |
+    | `Priority priority()` | 返回线程的优先级 |
+    | `void setPriority(Priority priority)` | 设置进程的优先级 |
+    | `void exit(int returnCode=0)` | 退出线程的事件循环, 退出码为 **returnCode**, **0**表示成功退出; 否则表示有**错误** |
+    | `bool wait(unsigned long time)` | 阻止线程执行, 直到线程结束(从 `run()` 函数返回), 或等待时间超过 **time** 毫秒 |
+  - 公有槽函数
+    | 函数 | 功能 |
+    | :-: | :-: |
+    | `void quit()` | 退出线程的事件循环, 并返回代码 0, 等效于 `exit(0)` |
+    | `void start(Priority priority)` | 内部调用 `run()` 开始执行线程, 操作系统根据 `priority` 参数进行调度 |
+    | `void terminate()` | 终止线程的运行, 但不是立即结束线程, 而是等待操作系统结束线程, 使用 `terminate()` 后应该使用 `wait()` <p> ***需要注意 : terminate() 并不是系统推荐的终止线程的方式, 建议开发人员自己定义终止线程方式或者使用其他方法***|
+  - 信号
+    | 函数 | 功能 |
+    | :-: | :-: |
+    | `void finished()` | 在线程就要结束时发送此信号 |
+    | `void started()` | 在线程开始执行、`run()` 函数被调用之前发射此信号 |
+  - 静态共有函数
+    | 函数 | 功能 |
+    | :-: | :-: |
+    | `int idealThreadCount()` | 返回系统上能运行的线程的理想个数 |
+    | `void msleep(unsigned long msecs)` | 强制线程休眠 `msecs` 毫秒 |
+    | `void sleep(unsigned long secs)`| 强制线程休眠 `secs` 秒 |
+    | `void usleep(unsigned long usecs)` | 强制当前线程休眠 `usecs` 微秒 |
+  - 保护函数
+    | 函数 | 功能 |
+    | :-: | :-: |
+    | `vitual void run()` | `start()` 调用 `run()` 函数开始线程任务的执行, 所以在 `run()` 函数中实现线程的任务功能 |
+    | `int exec()` | 由 `run()` 函数调用, 进入线程的事件循环, 等待 `exit()` 退出 |
+
+***线程同步***
+- 为什么要使用线程同步, 当多个线程对同一块内存进行访问时, 有可能会导致出现问题
+- 线程同步的方式
+  - QT 中提供线程同步的几种机制
+    - `QMutex` 互斥锁(互斥量)
+    - `QReadWriteLock` 读写锁
+    - `QSemaphore` 信号量
+    - `QWaitCondition` 条件等待
+- `QMutex` 和 `QMutexLocker` 类
+  - `QMutex` (互斥锁) 提供多线程间串行访问共享资源的方式, 本质上是基于相互排斥的锁, 也称为互斥量
+  - `QMutex` 常用于在多线程中保护对象、数据结构或者代码段, 在同一时刻只能有一个线程可以拥有互斥量 **(更多内容详见手册)**
+    - **`lock()` :** 锁定互斥量, 如果另外一个线程锁定了这个互斥量, 它将阻塞执行知道其他线程解锁这个互斥量
+    - **`unlock()` :** 解锁一个互斥量, 需要与 lock() 配对使用
+    - **`tryLock()` :** 试图锁定一个互斥量, 如果成功锁定就返回 `true`; 如果其他线程已经锁定了这个互斥量, 就返回 `false`, 但不阻塞程序的执行
+  - `QMutexLocker` 是一个简化了互斥量处理的类
+  - `QMutexLocker` 的构造函数接收一个互斥量作为参数并将其锁定, 析构函数则将此互斥量解锁, 所以在 `QMutexLocker` 实例变量的生存期内的代码段得到保护, 自动进行互斥量的锁定和解锁
+  - `QMutexLocker(QMutex* mutex)`
+  - **互斥锁(互斥量) 的不足**
+    - 每次只能有一个线程获得互斥量的权限
+    - 如果在一个程序中有多个线程读取某个变量, 使用互斥量时也必须排队, 而实际上若只是读取一个变量, 是可以让多个线程同时访问的, 这样互斥量就会降低程序的性能
+- **`QReadWriteLock`** 类
+  - `QReadWriteLock` 以读或写锁定的同步方法允许以读或者写的方式保护一段代码
+  - 可以允许多个线程以只读方式同步访问资源, 但是只要有一个线程在以写方式访问资源时, 其他线程就必须等待直到写操作结束
+  - **`QReadWriteLock`** 提供的主要的函数
+    - `lockForRead()` , 以只读方式锁定资源, 如果有其他线程以写入方式锁定这个函数会阻塞
+    - `lockForWrite()` , 以写入方式锁定资源, 如果本线程或其他线程以读或写模式锁定资源, 这个函数就阻塞
+    - `unlock()`, 解锁;
+    - `tryLockForRead()` , 是 lockForRead()的非阻塞版本
+    - `tryLockForWrite()` , 是 lockForWrite()的非阻塞版本
+
+
+
+
 
 
