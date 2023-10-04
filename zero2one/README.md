@@ -149,5 +149,47 @@
 - QListWidget 的主要信号 currentItemChanged() 功能, 编写相应槽函数
 - 为 QListWidget 控件创建自定义快捷菜单
 
+## FileSystemModel
+实现文件浏览功能
+- 使用 QListView、QTableView 和 QTreeView 作为视图控件, QFileSystemModel 作模型控件, 进行组合使用
 
+## StringListModel
+实现一个简单的字符串列表模型
 
+## QStandardItemModel
+- 实现一个标准的视图模型, 可以读取文件信息到表格视图中
+- 打开一个纯文本文件, 该文件是规则的二维数据文件, 通过字符串处理获取表头和各行各列的数据, 导入到一个 **QStandardItemModel** 数据模型
+  - **从文本文件导入数据**, 将文本从文件中读取出来, 保存到 QStringList 中
+    - `QCoreApplication::applicationDirPath()` 获取应用程序路径
+    - `QFileDialig::getOpenFileName` 获取文件名
+    - `QFile::open` 打开文件
+    - `QTextStream` 文本流读取文件
+- 编辑修改数据模型的数据, 可以**插入行、添加行、删除行** , 还可以在 **QTableView** 视图组件中直接修改单元格的数据内容
+- 可以设置数据模型中某个项的不同角色的数据, 包括文字对齐方式、字体是否粗体等
+- 通过 **QltemSelectionModel** 获取视图组件上的当前单元格, 以及选择单元格的范围, 对选择的单元格进行操作
+- 将数据模型的数据内容显示到 **QPlainTextEdit** 组件里, 显示数据模型的内容, 检验视图组件上做的修改是否与数据模型同步
+- 将修改后的模型数据另存为一个文本文件
+
+## StandardItemModel_useComboBox4Delegate
+基于QComboBox的自定义代理类
+- 设计一个基于 `QComboBox` 类的自定义代理类, 用于 "性别" 数据列的编辑
+- 在 Qt Creator 中, **右键项目名称** -> **Add New 菜单项** -> **C++** -> **C++ Class** , 然后再依次按照步骤添加类, 系统会自动生成头文件和源文件, 并添加到项目中
+
+## StandardDialog
+了解标准窗口类
+- 包括输入窗口、警告窗口等
+
+## CustomDialog
+了解自定义对话框类
+- 主窗口采用 `QTableView` 、 `QStandardItemModel`、`QItemSelectionModel` 构成一个通用的数据表格编辑器,
+- 设计 3 个对话框, 分别拥有不同的功能, 并且只能是对话框的不同调用方式的特点
+
+## BasePaint
+
+## PainterPath
+
+## Driver
+
+## SqlQuery
+
+## SqlQueryModel
