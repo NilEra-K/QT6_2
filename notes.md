@@ -685,14 +685,14 @@ QT 框架中的模块分为两大类:
     | `int exec()` | 由 `run()` 函数调用, 进入线程的事件循环, 等待 `exit()` 退出 |
 
 ***线程同步***
-- 为什么要使用线程同步, 当多个线程对同一块内存进行访问时, 有可能会导致出现问题
+- 为什么要使用线程同步——当多个线程对同一块内存进行访问时, 有可能会导致出现问题
 - 线程同步的方式
   - QT 中提供线程同步的几种机制
     - `QMutex` 互斥锁(互斥量)
     - `QReadWriteLock` 读写锁
     - `QSemaphore` 信号量
     - `QWaitCondition` 条件等待
-- `QMutex` 和 `QMutexLocker` 类
+- **互斥锁 —— `QMutex` 和 `QMutexLocker` 类**
   - `QMutex` (互斥锁) 提供多线程间串行访问共享资源的方式, 本质上是基于相互排斥的锁, 也称为互斥量
   - `QMutex` 常用于在多线程中保护对象、数据结构或者代码段, 在同一时刻只能有一个线程可以拥有互斥量 **(更多内容详见手册)**
     - **`lock()` :** 锁定互斥量, 如果另外一个线程锁定了这个互斥量, 它将阻塞执行知道其他线程解锁这个互斥量
@@ -704,18 +704,171 @@ QT 框架中的模块分为两大类:
   - **互斥锁(互斥量) 的不足**
     - 每次只能有一个线程获得互斥量的权限
     - 如果在一个程序中有多个线程读取某个变量, 使用互斥量时也必须排队, 而实际上若只是读取一个变量, 是可以让多个线程同时访问的, 这样互斥量就会降低程序的性能
-- **`QReadWriteLock`** 类
+- **读写锁 —— `QReadWriteLock`** 类
   - `QReadWriteLock` 以读或写锁定的同步方法允许以读或者写的方式保护一段代码
   - 可以允许多个线程以只读方式同步访问资源, 但是只要有一个线程在以写方式访问资源时, 其他线程就必须等待直到写操作结束
   - **`QReadWriteLock`** 提供的主要的函数
     - `lockForRead()` , 以只读方式锁定资源, 如果有其他线程以写入方式锁定这个函数会阻塞
     - `lockForWrite()` , 以写入方式锁定资源, 如果本线程或其他线程以读或写模式锁定资源, 这个函数就阻塞
-    - `unlock()`, 解锁;
-    - `tryLockForRead()` , 是 lockForRead()的非阻塞版本
-    - `tryLockForWrite()` , 是 lockForWrite()的非阻塞版本
+    - `unlock()` , 解锁;
+    - `tryLockForRead()` , 是 `lockForRead()` 的非阻塞版本
+    - `tryLockForWrite()` , 是 `lockForWrite()` 的非阻塞版本
+- **信号量 —— `QSemaphore`类**
+  - 信号量 (Semaphore) 是一种限制对共享资源进行访问的线程同步机制, 它与互斥量 (Mutex) 相似, 但是有区别
+  - 一个互斥量只能被锁定一次, 而信号量可以多次使用
+  - 信号量通常用来保护一定数量的相同的资源
+  - **`QSemaphore`** 提供的主要函数
+    - `acquire(int n)` , 尝试获得 `n` 个资源, 如果没有这么多资源, 线程将阻塞直到有 `n` 个资源可用
+    - `release(int n)` , 释放 `n` 个资源, 如果信号量的资源已全部可用之后再 `release()` , 就可以**创建**更多的资源, 增加可用资源的个数
+    - `int available()` , **返回当前信号量可用的资源个数**, 这个数永远不可能为负数, 如果为 `0`, 就说明当前没有资源可用
+    - `bool tryAcquire(int n=1)` , 尝试获取 `n` 个资源, 不成功时不阻塞线程
+- **基于条件变量的线程同步 —— `QWaitCondition` 类**
+  - `QWaitCondition` 与 `QMutex` 结合, 可以使一个线程在满足一定条件时通知其他一个或多个线程, 使它们及时作出响应, 这样比只使用互斥量效率要高一些
+  - `QWaitCondition` 一般用于 _"生产者/消费者" (Producer/Consumer)模型中_
+  - **`QWaitCondition`** 提供的主要函数
+  - `wait(QMutex* lockedMutex)` , 解锁互斥量 `lockedMutex` , 并阻塞等待唤醒条件, 被唤醒后锁定 `lockedMutex` 并退出函数
+  - `wakeAll()` , 唤醒所有处于等待状态的线程, 线程唤醒的顺序不确定, 由操作系统的调度策略决定
+  - `wakeOne()` , 唤醒一个处于等待状态的线程, 唤醒哪个线程不确定由操作系统的调度策略决定
+  - **程序员在编写代码时可能会遇到条件容易混淆的情况, 可用按照如下方式进行判断 :** *当执行 `wait()` 的时候说明条件不满足, 当前正处于该条件的反条件, 当执行 `wakeAll()` 或者 `wakeOne()` 时说明条件满足, 当前正处于该条件下* 
 
+---
 
+**QT 网络编程** <p>
+使用时需要添加 `QT += network` <p>
+***主机信息查询***
+- **`QHostlnfo`类**
+  - 公有函数
+    | 函数原型 | 作用 |
+    | :-: | :-: |
+    | `QList<QHostAddress> addresses()` | 返回与hostName()主机关联的IP地址列表 |
+    | `HostlnfoError error()` | 如果主机查找失败, 返回失败类型 |
+    | `QString errorString()` | 如果主机查找失败, 返回错误描述字符串 |
+    | `QString hostName()` | 返回通过IP查找的主机的名称 |
+    | `int lookupId()` | 返回本次查找的ID |
+  - 静态函数
+    | 函数原型 | 作用 |
+    | :-: | :-: |
+    | `void abortHostLookup(int id)` | 中断主机查找 |
+    | `QHostInfo fromName(QString& name)` | 返回指定的主机名的 IP 地址 |
+    | `QString localDomainName()` | 返回主机 DNS 域名 |
+    | `QString localHostName()` | 返回本机主机名 |
+    | `int lookupHost(QString& name, QObject* receiver, char* member)` | **(该函数的使用方式需要仔细查阅手册)** 以异步方式根据主机名查找主机的 IP 地址, 并返回一个表示本次查找的 ID, 可用于 `abortHostLookup()` |
+- **`QNetWorkInterface`类**
+  - 公有函数
+    | 函数原型 | 作用 |
+    | :-: | :-: |
+    | `QList<QNetwoekAddressEntry> addressEntries()`| 返回该网络接口(包括子网掩码和广播地址)的 IP 地址列表 |
+    | `QString hardwareAddress()` | 返回该接口的低级硬件地址, 以太网里就是 `MAC` 地址 |
+    | `QString humanReadableName()`| 返回人类可读的接口名称, 如果名称不确定, 得到的就是 `name()` 函数的返回值 |
+    | `bool isValid()` | 如果接口有效即返回 `true` |
+    | `QString name()` | 返回网络接口名称 |
+  - 静态函数
+    | 函数原型 | 作用 |
+    | :-: | :-: |
+    | `QList<QHostAddress> allAddresses()` | 返回主机上所有 IP 地址的列表 |
+    | `QList<QNetworkInterface> allInterfaces()` | 返回主机上所有接口的网络列表 |
 
+***TCP 通信***
+- *TCP(Transmission Control Protocol)* 是一种被大多数 Internet网络协议 (如 HTTP 和 FTP)用于数据传输的低级网络协议, 它是可靠的、面向流、面向连接的传输协议, 特别适合用于连续数据传输
+- TCP通信必须先建立TCP连接,  通信端分为客户端和服务器端
+  ![](./src/QT_TCP.png)
+- QT 提供 `QTcpSocket` 类和 `QTcpServer` 类用于建立 TCP 通信应用程序
+- 服务器端程序必须使用 `QTcpServer` 用于端口监听, 建立服务器 ; `QTcpSocket` 用于建立连接后使用套接字 (Socket) 进行通信
+- `QTcpServer` 是从 `QObject` 继承的类, 它主要用于服务器端建立网络监听, 创建网络 Socket 连接
 
+- **`QTcpServer`类**
+  - 公有函数
+    | 函数 | 作用 |
+    | :-: | :-: |
+    | `void close()` | 关闭服务器 |
+    | `bool listen()` | 监听 |
+    | `bool isListening()` | 判断是否处于监听状态 |
+    | `QTcpSocket* nextPendingConnection()` | 下一个未决的连接 |
+    | `QHostAddress serverAddress()` | 获取服务器端 IP 地址 |
+    | `quint16 serverPort()` | 获取服务器端端口号 |
+    | `bool waitForNewConnection()` | 等待新的连接 |
+  - 信号
+    | 函数 | 作用 |
+    | :-: | :-: |
+    | `void acceptError(QAbstractSocket::SocketError socketError)` | 接收新的连接过程中出现错误 |
+    | `void newConnection()` | 有一个新的连接变得可用 |
+  - 保护函数
+    | 函数 | 作用 |
+    | :-: | :-: |
+    | `incommingConnection(qintptr socketDescriptor)` |  |
+    | `void addPendingConnection(QTcpSocket* socket)`| 添加未决连接 |
+  - 简单流程
+    ```
+    // QTcpServer 类使用伪代码
+    // 1. 开始监听
+    bool QTcpServer::listen(const QHostAddress=QHostAddress::Any, quint16 port=0);
+    // 2. 当客户端接入时, QTcpServer 调用 incomingConnection() 函数
+    void QTcpServer::incomingConnection(qintptr socketDescriptor) {
+        创建 QTcpSocket 对象;
+        调用 addPendingConnection(QTcpSocket* socket)函数;
+        发射 newConnection() 信号;
+    }
+    // 3. 在 newConnection() 信号连接的槽函数中, 调用 nextPendingConnection()
+    // 获取下一个未决连接的 QTcpSocket 对象
+    // 4. 使用 QTcpSocket 进行通信
+    // 5. 关闭服务器, 停止监听
+    void QTcpServer::close();
+    ```
+- **`QTcpSocket`类**
+- `QTcpSocket` 是从 `QIODevice` 间接继承的类, 所以具有流读写的功能
+- `QTcpSocket` 类除了构造函数和析构函数, 其他函数都是从 `QAbstractSocket` 继承或重定义的
+- `QAbstractSocket` 用于TCP通信的主要接口函数如下:
+  - 公有函数
+    | 函数 | 作用 |
+    | :-: | :-: |
+    | `void connectToHost(QHostAddress& address,quint16 port)` | 连接到主机 |
+    | `void disconnectFromHost()` | 从主机断开 |
+    | `bool waitForConnected()` | 等待连接 |
+    | `bool waitForDisconnected()` | 等待断开连接 |
+    | `QHostAddress localAddress()` | 获取本地主机 |
+    | `quint16 localPort()` | 获取本地端口 |
+    | `QHostAddress peerAddress()` | 获取一对主机地址 |
+    | `QString peerName()` | 获取一对主机名 |
+    | `quint16 peerPort()` | 获取一对端口号 |
+    | `qint64 readBufferSize()` | 读取缓冲区大小 |
+    | `void setReadBufferSize(qint64 size)` | 设置读取缓冲区的大小 |
+    | `qint64 bytesAvailable()` | 返回有多少可供读取的数据 |
+    | `bool canReadLine()` | 判断是否能够读取一行 |
+    | `QAbstractSocket:SocketState state()` | 返回当前套接字的状态 |
 
+  - 信号
+    | 函数 | 作用 |
+    | :-: | :-: |
+    | `void connection` | `connectToHost()` 成功连接到服务器后发射此信号  |
+    | `void disconnected()` | 当Socket断开连接后发射此信号 |
+    | `void error(QAbstractSocket::SocketError socketError)` | 当 Socket 发生错误时发射此信号 |
+    | `void hostFound()` | 调用 `connectToHost()` 找到主机后发射此信号 |
+    | `void stateChanged(QAbstractSocket::SocketState socketState)` | 当Socket 的状态变化时发射此信号, 参数 `socketState` 表示了 Socket 当前的状态 |
+    | `void readyRead()` | 当缓冲区有新数据需要读取时发射此信号, 在此信号的槽函数里, 读取缓冲区的数据 |
 
+  - 简单流程
+    ```
+    // 1. 连接到服务器
+    void QAbstractSocket::connectToHost(const QHostAddress &address, quint16 port, QIODeviceOpenMode openMode=ReadWrite);
+    // 尝试在给定的端口上, 创建一个到给定主机名的连接
+    // protocol 参数用于指定使用的网络协议(IPV4/IPv6)
+    // 连接过程:
+    //     1> Socket 在给定 openMode 中打开
+    //     2> QAbstractSocket 进入 HostLookupState 状态
+    //     3> 执行主机名(hostName)的查找
+    //     4> 如果查找成功, 发射信号 hostFound(), 同时 QAbstractSocket 进入 ConnectingState 状态
+    //     5> 然后尝试连接到查找到的一个或者多个地址
+    //     6> 如果建立了连接, QAbstractSocket 进入 ConnectingState 状态并发射信号 connected()
+
+    // 2. 断开连接
+    void QAbstractSocket::disconnectFromHost();
+    // 断开过程:
+    //     1> 尝试关闭 Socket
+    //     2> 如果有待写入数据正在写入, QAbstractSocket 进入 ClosingState 状态并等待, 直到所有数据写入完毕
+    //     3> 最后, QAbstractSocket 进入 UnconnectedState状态, 同时发射信号 disconnected()
+    ```
+    ![](./src/TCP_STREAM.png)
+
+***UDP 通信***
+- **UDP(User Datagram Protocol, 用户数据报协议)** 是轻量的、不可靠的、面向数据报(datagram)、无连接的协议, 它可以用于对可靠性要求不高的场合
+- 两个程序之间进行 UDP 通信无需预先建立持久的 socket 连接, UDP 每次发送数据报都需要指定目标地址和端口
