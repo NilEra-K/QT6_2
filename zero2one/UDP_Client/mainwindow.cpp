@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 信号与槽函数连接
     connect(udpSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(onStateChanged(QAbstractSocket::SocketState)));
-    connect(udpSocket, SIGNAL(readyRead()), this, SLOT(onReadRead()));
+    connect(udpSocket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
 }
 
 MainWindow::~MainWindow()
@@ -66,7 +66,7 @@ QString MainWindow::getLocalIP() {
 //        }
 //    }
     QString localIP = ui->cmbTargetIP->currentText();
-    setWindowTitle(windowTitle() + "--本机 IP: " + localIP);
+    // setWindowTitle(windowTitle() + "--本机 IP: " + localIP);
     return localIP;
 }
 
@@ -93,7 +93,7 @@ void MainWindow::on_actDisbind_triggered() {
     udpSocket->abort();     // 直接断开绑定(立即关闭套接字), 未写入数据全部丢弃
     ui->actBind->setEnabled(true);
     ui->actDisbind->setEnabled(false);
-    ui->plainTextEdit->setPlainText(">>> 已解除绑定");
+    ui->plainTextEdit->appendPlainText(">>> 已解除绑定");
 }
 
 // 发送消息
@@ -102,6 +102,40 @@ void MainWindow::on_btnSend_clicked() {
     QHostAddress targetAddr(targetIP);
     qint16 targetPort = ui->spinTargetPort->value();
     QString msg = ui->editMessage->text();
-    QByteArray str = msg.toUtf8();
+    QByteArray str = msg.toUtf8();                              // 发送消息的内容
+    udpSocket->writeDatagram(str, targetAddr, targetPort);       // 发送数据报
+    ui->plainTextEdit->appendPlainText(">>> [发送] " + msg);
+    ui->editMessage->clear();
+    ui->editMessage->setFocus();
+}
+
+// 广播信息
+void MainWindow::on_btnBoardcast_clicked() {
+    qint16 targetPort = ui->spinTargetPort->value();
+    QString msg = ui->editMessage->text();
+    QByteArray str = msg.toUtf8();                                      // 发送消息的内容
+    udpSocket->writeDatagram(str, QHostAddress::Broadcast, targetPort);  // 发送数据报
+    ui->plainTextEdit->appendPlainText(">>> [广播] " + msg);
+    ui->editMessage->clear();
+    ui->editMessage->setFocus();
+}
+
+// 接收数据
+void MainWindow::onReadyRead() {
+    while(udpSocket->hasPendingDatagrams()) { // 是否有待读取的数据
+        QByteArray datagram;    // 设置一个 ByteArray 数组
+        datagram.resize(udpSocket->pendingDatagramSize());  // 用下一个待读取的数据报大小设置数组的大小
+        QHostAddress peerAddr;  // 获取对方 IP 地址的变量, 输出型参数
+        quint16 peerPort;       // 获取对方端口的变量, 输出型参数
+        udpSocket->readDatagram(datagram.data(), datagram.size(), &peerAddr, &peerPort);
+        QString str = datagram.data();
+        QString peer = ">>> [接收] From " + peerAddr.toString() + ":" + QString::number(peerPort);    // 拼接一个消息字符串, From addr:port
+        ui->plainTextEdit->appendPlainText(peer + ' ' + str);   // 输出信息
+    }
+}
+
+// 清空文本款
+void MainWindow::on_actTextClear_triggered() {
+    ui->plainTextEdit->clear();
 }
 

@@ -25,9 +25,17 @@ private:
 
 private slots:
     void onStateChanged(QAbstractSocket::SocketState socketState);
-    void onReadRead();
+    void onReadyRead();
 
     void on_actBind_triggered();
+
+    void on_actDisbind_triggered();
+
+    void on_btnSend_clicked();
+
+    void on_btnBoardcast_clicked();
+
+    void on_actTextClear_triggered();
 
 private:
     Ui::MainWindow *ui;
